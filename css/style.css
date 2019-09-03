@@ -1,0 +1,57 @@
+.validation_errors{
+    min-height: 48px;
+    line-height: 48px;
+    border: 1px solid #ffcd00;
+    background: #f9ebb3 url(../images/warning.png) center left no-repeat;
+    padding-left: 48px;
+}
+
+.message_success{
+    min-height: 48px;
+    line-height: 48px;
+    border: 1px solid #adff00;
+    background: #e4feca url(../images/checkmark.png) center left no-repeat;
+    padding-left: 48px;
+}
+
+.message_error{
+    min-height: 48px;
+    line-height: 48px;
+    border: 1px solid #ff0000;
+    background: #fbd2d2 url(../images/error.png) center left no-repeat;
+    padding-left: 48px;
+}
+
+hr {
+    border: 0;
+    height: 1px;
+    background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0));
+}
+
+.tabela,td,th {
+    overflow: hidden;
+    border: 2px solid;
+    border-color: white;
+    text-align-last: center;
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    
+   /* border-collapse:separate;
+   /* border:solid black 1px;*/
+    border-radius:8px;
+    -moz-border-radius:8px;
+}
+th {
+    background-color: grey;
+    color: white;
+}
+
+tr:hover {
+    background-color: #E3E3E3;
+}
+
+tr{
+    background-color: #F2F2F2;
+}
