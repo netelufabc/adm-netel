@@ -1,6 +1,5 @@
 <?php
 
-echo "<hr>";
 echo br(2);
 echo "<h2>NADA AQUI. NÃO LOGADO.</h2>";
 
