@@ -10,7 +10,7 @@ class Model_project extends CI_Model {
 
     public function Get_project_coordenador($project_id) {
         $this->db->select('uab_project.project_number, uab_project.id as project_id, uab_project.title,
-                user.login as coordenador, user.id as user_id ');
+                user.login as coordenador , user.name as coord_name, user.id as user_id ');
         $this->db->from('uab_project');
         $this->db->join('user_role', "user_role.project_id = $project_id and user_role.role_id = 3");
         $this->db->join('user', 'user.id = user_role.user_id');
