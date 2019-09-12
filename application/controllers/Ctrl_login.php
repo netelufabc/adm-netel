@@ -10,14 +10,14 @@ class Ctrl_login extends CI_Controller {
     }
 
     public function Index() {
-
+        
         $dados_login = elements(array('login', 'password'), $this->input->post());
 
         $user_data = $this->Model_login->Get_user_and_role($dados_login['login']);
-        
+
         $lowest_role = 100;
         foreach ($user_data as $user) {
-            if($user->role < $lowest_role){
+            if ($user->role < $lowest_role) {
                 $lowest_role = $user->role;
                 $user_id = $user->id;
             }
@@ -49,6 +49,8 @@ class Ctrl_login extends CI_Controller {
 
                     $sessioninfo = array('id' => $user_id, 'login' => $dados_login['login'], 'nome' => $displayname, 'role' => $user_role, 'email' => $mail);
                     $this->session->set_userdata($sessioninfo);
+                    $dados_user = array('id' => $user_id, 'login' => $dados_login['login'], 'email' => $mail, 'name' => $displayname);
+                    $this->Model_login->Update_user_info_from_ldap($dados_user);
 
                     ldap_close($ldapcon);
                     redirect('Ctrl_main');
