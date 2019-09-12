@@ -9,6 +9,12 @@ if ($this->session->flashdata('invalid_credentials')) {
     echo "</div><br>";
 }
 
+if ($this->session->flashdata('role_not_set')) {
+    echo "<div class=\"validation_errors\">";
+    echo $this->session->flashdata('role_not_set');
+    echo "</div><br>";
+}
+
 echo form_open('Ctrl_login');
 
 echo form_label('Login: ');

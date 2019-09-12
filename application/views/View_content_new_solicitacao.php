@@ -2,38 +2,8 @@
 echo "<h2>Nova solicitação: </h2>";
 ?>
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-
-<script>
-    $(document).ready(function () {
-        $("select").change(function () {
-            var color = $(this).val();
-            if (color == "red") {
-                $(".box").not(".red").hide();
-                $(".red").show();
-            } else if (color == "green") {
-                $(".box").not(".green").hide();
-                $(".green").show();
-            } else if (color == "blue") {
-                $(".box").not(".blue").hide();
-                $(".blue").show();
-            } else if (color == "maroon") {
-                $(".box").not(".maroon").hide();
-                $(".maroon").show();
-            } else if (color == "magenta") {
-                $(".box").not(".magenta").hide();
-                $(".magenta").show();
-            } else {
-                $(".box").hide();
-            }
-        });
-    });
-</script>
-
-
-
 <div>
-    <select>
+    <select name="solic_select">
         <option>Selecione</option>
         <option value="red">Contratação de Pessoal</option>
         <option value="green">Pagamento de Bolsa</option>
@@ -45,32 +15,67 @@ echo "<h2>Nova solicitação: </h2>";
 <?php echo br(1) . "<input value=\"Cancelar\" onclick=\"JavaScript:window.history.back();\" type=\"button\">"; ?>
 <br><hr><br>
 
+<?php
+if ($this->session->flashdata('erro_solic')) {
+    echo "<div class=\"message_error\">";
+    echo $this->session->flashdata('erro_solic');
+    echo "</div><br>";
+}
+?>
+
 <div class="form_div" align="left"><!--div para formulario alinhar à esquerda-->
 
     <div class="red box" style="display:none"> 
 
         <h3>Contratação de Pessoal</h3>
 
-        nada aqui </div>
+        nada aqui 
+    </div>
 
     <div class="green box"style="display:none">
 
         <h3>Pagamento de Bolsas</h3>
 
         <?php
-        echo form_open('');
+        echo form_open('Ctrl_project/New_solic_bolsa');
         echo form_hidden('project_id', $project_id);
         echo br(1);
 
         echo form_label('Mês / Ano: ') . br();
-        echo form_dropdown('mes', array('' => 'Mês', '1' => 'Janeiro', '2' => 'Fevereiro', '3' => 'Março'));
-        echo form_dropdown('ano', array('' => 'Ano', '2018' => '2018', '2019' => '2019', '2020' => '2020'));
+        echo form_input(array('name' => 'mes_ano', 'type' => 'month', 'required' => 'required', 'min' => '2019-10'), set_value('mes_ano')) . br();
         echo br(1);
 
-        echo form_label('Tutor ou Docente? ') . br();
-        echo form_input(array('name' => 'title', 'required' => 'required'), set_value('title'));
+        echo form_label('Pagamento para tutores ou docentes?') . br();
+        echo form_dropdown('tutor_ou_docente', array('' => 'Selecione', 'tutor' => 'Tutores', 'docente' => 'Docentes'));
         echo br(2);
+        ?>
 
+        <div class="tutor caixa" style="display:none"> 
+
+            <?php
+            echo "Selecione os tutores: (segure a tecla \"Ctrl\" para selecionar vários)" . br();
+            if (isset($lista_tutores) && ($lista_tutores != null)) {
+                echo form_multiselect('lista_tutores[]', $lista_tutores) . br();
+            } else {
+                echo "Nenhum tutor cadastrado" . br(2);
+            }
+            ?>
+
+        </div>
+        <div class="docente caixa" style="display:none"> 
+
+            <?php
+            echo "Selecione os docentes: (segure a tecla \"Ctrl\" para selecionar vários)" . br();
+            if (isset($lista_docentes) && ($lista_docentes != null)) {
+                echo form_multiselect('lista_docentes[]', $lista_docentes) . br();
+            } else {
+                echo "Nenhum docente cadastrado" . br(2);
+            }
+            ?>
+
+        </div>
+
+        <?php
         echo form_submit(array('name' => 'inserir_solicitacao_bolsa'), 'Criar Solicitação de Pagamento de Bolsa');
         echo form_close();
         ?>
@@ -147,24 +152,24 @@ echo "<h2>Nova solicitação: </h2>";
         <h3>Serviços</h3>
 
         <?php
-        echo form_open('');
+        echo form_open('Ctrl_project/New_solic_servico');
         echo form_hidden('project_id', $project_id);
         echo br(1);
 
         echo form_label('Tipo de Serviço: ') . br();
-        echo form_input(array('name' => 'tipo_servico', 'required' => 'required'), set_value('tipo_servico'));
+        echo form_textarea(array('name' => 'tipo_servico', 'required' => 'required'), set_value('tipo_servico'));
         echo br(1);
 
         echo form_label('Motivação da Contratação (Objetivos e justificativa): ') . br();
-        echo form_textarea(array('name' => 'motivacao', 'required' => 'required'), set_value('motivacao'));
+        echo form_textarea(array('name' => 'motivacao_servico', 'required' => 'required'), set_value('motivacao_servico'));
         echo br(1);
 
         echo form_label('Conexão entre a contratação eo planejamento existente: ') . br();
-        echo form_textarea(array('name' => 'conexao', 'required' => 'required'), set_value('conexao'));
+        echo form_textarea(array('name' => 'conexao_servico', 'required' => 'required'), set_value('conexao_servico'));
         echo br(1);
 
         echo form_label('Prazo para execução do serviço: ') . br();
-        echo form_input(array('name' => 'prazo', 'type' => 'date', 'required' => 'required'), set_value('prazo'));
+        echo form_input(array('name' => 'prazo_servico', 'type' => 'date', 'required' => 'required'), set_value('prazo_servico'));
         echo br(2);
 
         echo form_submit(array('name' => 'inserir_solicitacao_serviço'), 'Criar Solicitação de Serviço');
@@ -178,36 +183,36 @@ echo "<h2>Nova solicitação: </h2>";
         <h3>Compras</h3>
 
         <?php
-        echo form_open('');
+        echo form_open('Ctrl_project/New_solic_compra');
         echo form_hidden('project_id', $project_id);
         echo br(1);
 
         echo form_label('Nome do Item: ') . br();
-        echo form_input(array('name' => 'item', 'required' => 'required'), set_value('item'));
+        echo form_input(array('name' => 'item_compra', 'required' => 'required'), set_value('item_compra'));
         echo br(1);
 
         echo form_label('Especificação (produto/cor/tamanho/etc): ') . br();
-        echo form_textarea(array('name' => 'especificacao', 'required' => 'required'), set_value('especificacao'));
+        echo form_textarea(array('name' => 'especificacao_compra', 'required' => 'required'), set_value('especificacao_compra'));
         echo br(1);
 
         echo form_label('Unidade: ') . br();
-        echo form_input(array('name' => 'unidade', 'required' => 'required'), set_value('unidade'));
+        echo form_input(array('name' => 'unidade_compra', 'required' => 'required'), set_value('unidade_compra'));
         echo br(1);
 
         echo form_label('Quantidade: ') . br();
-        echo form_input(array('name' => 'quantidade', 'type' => 'number', 'min' => '1', 'required' => 'required'), set_value('quantidade'));
+        echo form_input(array('name' => 'quantidade_compra', 'type' => 'number', 'min' => '1', 'required' => 'required'), set_value('quantidade_compra'));
         echo br(1);
 
         echo form_label('Preço Médio Unitário (R$): ') . br();
-        echo form_input(array('name' => 'preco', 'type' => 'number', 'min' => '0', 'step' => '0.01', 'required' => 'required'), set_value('quantidade'));
+        echo form_input(array('name' => 'valor_compra', 'type' => 'number', 'min' => '0', 'step' => '0.01', 'required' => 'required'), set_value('valor_compra'));
         echo br(1);
 
         echo form_label('Motivação da compra (Objetivos e justificativa): ') . br();
-        echo form_textarea(array('name' => 'motivacao', 'required' => 'required'), set_value('motivacao'));
+        echo form_textarea(array('name' => 'motivacao_compra', 'required' => 'required'), set_value('motivacao_compra'));
         echo br(1);
 
         echo form_label('Conexão entre a contratação e o planejamento existente: ') . br();
-        echo form_textarea(array('name' => 'conexao', 'required' => 'required'), set_value('conexao'));
+        echo form_textarea(array('name' => 'conexao_compra', 'required' => 'required'), set_value('conexao_compra'));
         echo br(2);
 
         echo form_submit(array('name' => 'inserir_solicitacao_compra'), 'Criar Solicitação de Compra');
@@ -215,7 +220,5 @@ echo "<h2>Nova solicitação: </h2>";
         ?>
 
     </div>
-
-</div>
 
 </div>

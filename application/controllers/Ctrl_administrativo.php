@@ -79,6 +79,7 @@ class Ctrl_administrativo extends CI_Controller {
         $lista_users = $this->Model_administrativo->Get_all_users();
         $lista_assistentes = $this->Model_project->Get_project_assitentes($project_id);        
         $lista_tutores = $this->Model_project->Get_project_tutores($project_id);
+        $lista_docentes = $this->Model_project->Get_project_docentes($project_id);
 
         $lista_users_array['0'] = " --Selecione-- ";
         foreach ($lista_users as $value) {
@@ -87,6 +88,7 @@ class Ctrl_administrativo extends CI_Controller {
         asort($lista_users_array);
 
         $dados = array(
+            'listaDocentes' => $lista_docentes,
             'listaAssistentes' => $lista_assistentes,
             'listaTutores' => $lista_tutores,
             'coord' => $coord,
@@ -109,6 +111,12 @@ class Ctrl_administrativo extends CI_Controller {
         $project_id = $this->uri->segment(3);
         $user_id = elements(array('tutor'), $this->input->post());
         $this->Model_project->Insert_tutor($project_id, $user_id['tutor']);
+    }
+    
+    public function Edit_project_docente() {
+        $project_id = $this->uri->segment(3);
+        $user_id = elements(array('docente'), $this->input->post());
+        $this->Model_project->Insert_docente($project_id, $user_id['docente']);
     }
 
     public function New_user() {

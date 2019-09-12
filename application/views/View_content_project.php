@@ -30,6 +30,30 @@ echo "<hr>";
 </div>
 <br>
 <div>
+    <button type="button" class="myButton" data-toggle="collapse" data-target="#docente">Docentes</button>
+    <div id="docente" class="collapse">
+        <?php
+
+        if (isset($listaDocentes) && ($listaDocentes != null)) {
+
+            $template = array(
+                "table_open" => "<table class='tabela'>",
+            );
+            $this->table->set_template($template);
+            $this->table->set_heading('LOGIN', 'NOME', 'EMAIL', 'CRIADO EM', 'INSERIDO POR');
+            foreach ($listaDocentes as $row) {
+
+                $this->table->add_row($row->login, $row->name, $row->email, $row->create_time, $row->created_by);
+            }
+            echo $this->table->generate();
+        } else {
+            echo '<h5>NENHUM DOCENTE REGISTRADO</h5>';
+        }
+        ?>
+    </div>
+</div>
+<br>
+<div>
     <button type="button" class="myButton" data-toggle="collapse" data-target="#tutor">Tutores</button>
     <div id="tutor" class="collapse">
         <?php
