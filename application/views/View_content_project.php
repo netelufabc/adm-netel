@@ -33,7 +33,6 @@ echo "<hr>";
     <button type="button" class="myButton" data-toggle="collapse" data-target="#docente">Docentes</button>
     <div id="docente" class="collapse">
         <?php
-
         if (isset($listaDocentes) && ($listaDocentes != null)) {
 
             $template = array(
@@ -57,7 +56,6 @@ echo "<hr>";
     <button type="button" class="myButton" data-toggle="collapse" data-target="#tutor">Tutores</button>
     <div id="tutor" class="collapse">
         <?php
-
         if (isset($listaTutores) && ($listaTutores != null)) {
 
             $template = array(
@@ -94,9 +92,10 @@ if (isset($listaSolicitacoes) && ($listaSolicitacoes != null)) {
     );
     $this->table->set_template($template);
     $this->table->set_heading('NÚMERO', 'TIPO', 'STATUS', 'CRIADO POR', 'CRIADO EM');
+
     foreach ($listaSolicitacoes as $row) {
 
-        $this->table->add_row($row->id, $row->tipo, $row->status, $row->criado_por, $row->created_at);
+        $this->table->add_row(anchor('Ctrl_solicitacao/Solicitacao_info/' . $row->id, $row->id), $row->tipo, $row->status, $row->criado_por, $row->created_at);
     }
     echo $this->table->generate();
 } else {
