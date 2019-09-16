@@ -42,9 +42,10 @@ class Ctrl_project extends CI_Controller {
         $project_id = $this->uri->segment(3);
 
         $lista_tutores0 = $this->Model_project->Get_project_tutores($project_id);
-        $lista_docentes0 = $this->Model_project->Get_project_docentes($project_id);
-        ;
-
+        $lista_docentes0 = $this->Model_project->Get_project_docentes($project_id);        
+        $lista_tutores = null;
+        $lista_docentes = null;        
+        
         foreach ($lista_tutores0 as $value) {
             $lista_tutores[$value->id] = $value->name;
         }

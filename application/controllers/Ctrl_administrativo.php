@@ -8,6 +8,7 @@ class Ctrl_administrativo extends CI_Controller {
         parent::__construct();
         $this->load->model('Model_administrativo');
         $this->load->model('Model_project');
+        $this->load->model('Model_solicitacao');
     }
 
     public function Index() {
@@ -23,6 +24,18 @@ class Ctrl_administrativo extends CI_Controller {
         $this->load->view('View_main', $dados);
     }
 
+    function List_all_solic(){
+        $all_solic = $this->Model_solicitacao->Get_all_solicitacoes();
+        
+        $dados = array(
+            'all_solic' => $all_solic,
+            'view_menu' => 'View_menu.php',
+            'view_content' => 'View_content_list_all_solicitacao',
+            'menu_item' => criamenu($this->session->userdata('id'), $this->session->userdata('role')),
+        );
+        $this->load->view('View_main', $dados);
+    }
+    
     public function List_users() {
 
         $listaUsers = $this->Model_administrativo->Get_all_users();

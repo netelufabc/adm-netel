@@ -26,9 +26,6 @@ echo form_label('Descrição: ');
 echo form_textarea(array('name' => 'description'), set_value('description'));
 echo br(1);
 
-//echo form_label('Coordenador: ');
-//echo form_dropdown('user_id');
-
 echo "<br><br>";
 
 echo form_submit(array('name' => 'inserir'), 'Inserir Projeto');
