@@ -66,14 +66,14 @@ hr {
     padding-right: 5px;
     padding-top: 5px;
     padding-bottom: 5px;
-
+    text-align: center;
     /* border-collapse:separate;
     /* border:solid black 1px;*/
     border-radius:8px;
     -moz-border-radius:8px;
 }
 
-.tabela2 td, th{
+.tabela2 td{
     overflow: hidden;
     border: 7px solid;
     border-color: white;

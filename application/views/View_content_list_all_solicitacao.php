@@ -5,25 +5,25 @@ echo "<h3>Solicitações</h3>" . br();
 if (isset($all_solic) && ($all_solic != null)) {
     ?>   
 
-    <input type="text" class="searchInput" style="background-image: url('../images/searchicon.png');padding: 5px 6px 5px 30px;background-position: 5px 5px;background-repeat: no-repeat;" id="coluna0" onkeyup="filtraColuna(0, 'coluna0')" placeholder="Número..." title="Type in a name">
-    <input type="text" id="coluna1" class="searchInput" onkeyup="filtraColuna(1, 'coluna1')" placeholder="Projeto Nº..." title="Type in a name">
-    <input type="text" id="coluna2" class="searchInput" onkeyup="filtraColuna(2, 'coluna2')" placeholder="Nome Projeto..." title="Type in a name">
+    <input type="text" id="coluna0" class="searchInput" onkeyup="filtraColuna(0, 'coluna0')" placeholder="Número...">
+    <input type="text" id="coluna1" class="searchInput" onkeyup="filtraColuna(1, 'coluna1')" placeholder="Projeto Nº...">
+    <input type="text" id="coluna2" class="searchInput" onkeyup="filtraColuna(2, 'coluna2')" placeholder="Nome Projeto...">
     <br>
-    <input type="text" id="coluna3"  class="searchInput" onkeyup="filtraColuna(3, 'coluna3')" placeholder="Tipo..." title="Type in a name">
-    <input type="text" id="coluna4"  class="searchInput" onkeyup="filtraColuna(4, 'coluna4')" placeholder="Status..." title="Type in a name">
-    <input type="text" id="coluna5"  class="searchInput" onkeyup="filtraColuna(5, 'coluna5')" placeholder="Criador..." title="Type in a name">
-    <input type="text" id="coluna6"  class="searchInput" onkeyup="filtraColuna(6, 'coluna6')" placeholder="Criado em......" title="Type in a name">
+    <input type="text" id="coluna3" class="searchInput" onkeyup="filtraColuna(3, 'coluna3')" placeholder="Tipo...">
+    <input type="text" id="coluna4" class="searchInput" onkeyup="filtraColuna(4, 'coluna4')" placeholder="Status...">
+    <input type="text" id="coluna5" class="searchInput" onkeyup="filtraColuna(5, 'coluna5')" placeholder="Criador...">
+    <input type="text" id="coluna6" class="searchInput" onkeyup="filtraColuna(6, 'coluna6')" placeholder="Criado em......">
 
-    <table id="myTable" class="tabela">
+    <table id="allSolic" class="tabela">
         <thead>
             <tr>
-                <th onclick="sortTable(0)">NÚMERO</th>
-                <th onclick="sortTable(1)">PROJETO Nº</th>
-                <th onclick="sortTable(2)">NOME DO PORJETO</th>
-                <th onclick="sortTable(3)">TIPO</th>
-                <th onclick="sortTable(4)">STATUS</th>
-                <th onclick="sortTable(5)">CRIADO POR</th>
-                <th onclick="sortTable(6)">CRIADO EM</th>
+                <th onclick="sortTable(0, 'allSolic')">NÚMERO</th>
+                <th onclick="sortTable(1, 'allSolic')">PROJETO Nº</th>
+                <th onclick="sortTable(2, 'allSolic')">NOME DO PORJETO</th>
+                <th onclick="sortTable(3, 'allSolic')">TIPO</th>
+                <th onclick="sortTable(4, 'allSolic')">STATUS</th>
+                <th onclick="sortTable(5, 'allSolic')">CRIADO POR</th>
+                <th onclick="sortTable(6, 'allSolic')">CRIADO EM</th>
             </tr>
         </thead>
 
