@@ -50,9 +50,9 @@
         </script>
 
         <script>
-            function sortTable(n) {
+            function sortTable(n , tableID) {
                 var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
-                table = document.getElementById("myTable");
+                table = document.getElementById(tableID);
                 switching = true;
                 //Set the sorting direction to ascending:
                 dir = "asc";
