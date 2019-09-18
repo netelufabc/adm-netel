@@ -1,3 +1,32 @@
+.form_div{
+    padding-left: 30px;
+}
+
+textarea{
+    height: 80px;
+}
+
+.searchInput{
+    background-image: url('../images/searchicon.png');
+    background-position: 5px 5px;
+    background-repeat: no-repeat;
+    /*width: 100%;*/
+    /*font-size: 16px;*/
+    padding: 5px 6px 5px 30px !important;
+    /*border: 1px solid #ddd;*/
+    /*margin-bottom: 12px;*/
+}
+
+input[type=text], input[type=date], input[type=month], input[type=time], input[type=number], input[type=password], select, textarea {
+    width: auto;
+    padding: 5px 6px;
+    margin: 4px 0 15px;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    background-color: #f8f8f8;
+}
+
 .validation_errors{
     min-height: 48px;
     line-height: 48px;
@@ -37,12 +66,26 @@ hr {
     padding-right: 5px;
     padding-top: 5px;
     padding-bottom: 5px;
-    
-   /* border-collapse:separate;
-   /* border:solid black 1px;*/
+    text-align: center;
+    /* border-collapse:separate;
+    /* border:solid black 1px;*/
     border-radius:8px;
     -moz-border-radius:8px;
 }
+
+.tabela2 td{
+    overflow: hidden;
+    border: 7px solid;
+    border-color: white;
+    text-align-last: left;
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    border-radius:15px;
+    -moz-border-radius:15px;
+}
+
 th {
     background-color: grey;
     color: white;
@@ -55,3 +98,26 @@ tr:hover {
 tr{
     background-color: #F2F2F2;
 }
+
+.myButton {
+    background-color:#d9d9d9;
+    -moz-border-radius:3px;
+    -webkit-border-radius:3px;
+    border-radius:3px;
+    border:1px solid #999999;
+    width: 150px;
+    display:inline-block;
+    cursor:pointer;
+    color:#000000;
+    font-family:Arial;
+    font-size:14px;
+    padding:5px 5px;
+    text-decoration:none;
+}
+.myButton:hover {
+    background-color:#a1a1a1;
+}
+.myButton:active {
+    position:relative;
+    top:1px;
+}  

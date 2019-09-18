@@ -70,7 +70,45 @@ echo form_close();
 
 echo "<hr>";
 
+echo "Docentes:" .br(1);
+
+if ($this->session->flashdata('add_docente_ok')) {
+    echo "<div class=\"message_success\">";
+    echo $this->session->flashdata('add_docente_ok');
+    echo "</div><br>";
+}
+
+if (isset($listaDocentes) && ($listaDocentes != null)) {
+
+    $template = array(
+        "table_open" => "<table class='tabela'>",
+    );
+    $this->table->set_template($template);
+    $this->table->set_heading('LOGIN', 'NOME', 'EMAIL', 'CRIADO EM', 'CRIADO POR');
+    foreach ($listaDocentes as $row) {
+
+        $this->table->add_row($row->login, $row->name, $row->email, $row->create_time, $row->created_by);
+    }
+    echo $this->table->generate();
+} else {
+    echo '<h5>NENHUM DOCENTE REGISTRADO</h5>';
+}
+
+echo br(1). "Adicionar Docente:" .br(1);
+echo form_open("Ctrl_administrativo/Edit_project_docente/$dados_project->id");
+echo form_dropdown('docente', $lista_users);
+echo form_submit(array('name' => 'inserir_assistente'), 'Adicionar Docente');
+echo form_close();
+
+echo "<hr>";
+
 echo "Tutores:" .br(1);
+
+if ($this->session->flashdata('add_tutor_ok')) {
+    echo "<div class=\"message_success\">";
+    echo $this->session->flashdata('add_tutor_ok');
+    echo "</div><br>";
+}
 
 if (isset($listaTutores) && ($listaTutores != null)) {
 

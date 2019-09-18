@@ -8,6 +8,7 @@ class Ctrl_administrativo extends CI_Controller {
         parent::__construct();
         $this->load->model('Model_administrativo');
         $this->load->model('Model_project');
+        $this->load->model('Model_solicitacao');
     }
 
     public function Index() {
@@ -23,6 +24,18 @@ class Ctrl_administrativo extends CI_Controller {
         $this->load->view('View_main', $dados);
     }
 
+    function List_all_solic(){
+        $all_solic = $this->Model_solicitacao->Get_all_solicitacoes();
+        
+        $dados = array(
+            'all_solic' => $all_solic,
+            'view_menu' => 'View_menu.php',
+            'view_content' => 'View_content_list_all_solicitacao',
+            'menu_item' => criamenu($this->session->userdata('id'), $this->session->userdata('role')),
+        );
+        $this->load->view('View_main', $dados);
+    }
+    
     public function List_users() {
 
         $listaUsers = $this->Model_administrativo->Get_all_users();
@@ -79,6 +92,7 @@ class Ctrl_administrativo extends CI_Controller {
         $lista_users = $this->Model_administrativo->Get_all_users();
         $lista_assistentes = $this->Model_project->Get_project_assitentes($project_id);        
         $lista_tutores = $this->Model_project->Get_project_tutores($project_id);
+        $lista_docentes = $this->Model_project->Get_project_docentes($project_id);
 
         $lista_users_array['0'] = " --Selecione-- ";
         foreach ($lista_users as $value) {
@@ -87,6 +101,7 @@ class Ctrl_administrativo extends CI_Controller {
         asort($lista_users_array);
 
         $dados = array(
+            'listaDocentes' => $lista_docentes,
             'listaAssistentes' => $lista_assistentes,
             'listaTutores' => $lista_tutores,
             'coord' => $coord,
@@ -109,6 +124,12 @@ class Ctrl_administrativo extends CI_Controller {
         $project_id = $this->uri->segment(3);
         $user_id = elements(array('tutor'), $this->input->post());
         $this->Model_project->Insert_tutor($project_id, $user_id['tutor']);
+    }
+    
+    public function Edit_project_docente() {
+        $project_id = $this->uri->segment(3);
+        $user_id = elements(array('docente'), $this->input->post());
+        $this->Model_project->Insert_docente($project_id, $user_id['docente']);
     }
 
     public function New_user() {
