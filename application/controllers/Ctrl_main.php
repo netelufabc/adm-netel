@@ -19,13 +19,13 @@ class Ctrl_main extends CI_Controller {
             //$role = $this->session->userdata('role');
             switch ($this->session->userdata('role')) {
                 case 1:
-                    redirect('Ctrl_sysadm');
+                    redirect('Ctrl_sysadmin/Info');
                     break;
                 case 2:
                     redirect('Ctrl_administrativo');
                     break;
                 case 3:
-                    redirect('Ctrl_coordenador');
+                    redirect('Ctrl_coordenador/List_projects');
                     break;
                 case 4:
                     redirect('Ctrl_assistente');

@@ -86,19 +86,6 @@ class Model_solicitacao extends CI_Model {
         return $this->db->get()->result();
     }
 
-//    public function Get_solicitacao_info($project_id) {
-//        $this->db->select('solicitacao.*, solicitacao_encontro.id as encontro_id, solicitacao_compra.id as  compra_id,
-//                solicitacao_servico.id as evento_id, solicitacao_bolsa.id as bolsa_id, user.name as criado_por');
-//        $this->db->from('solicitacao');
-//        $this->db->join('solicitacao_encontro', 'solicitacao.id = solicitacao_encontro.solicitacao_id', 'left');
-//        $this->db->join('solicitacao_servico', 'solicitacao.id = solicitacao_servico.solicitacao_id', 'left');
-//        $this->db->join('solicitacao_compra', 'solicitacao.id = solicitacao_compra.solicitacao_id', 'left');
-//        $this->db->join('solicitacao_bolsa', 'solicitacao.id = solicitacao_bolsa.solicitacao_id', 'left');
-//        $this->db->join('user', 'user.id = solicitacao.created_by');
-//        $this->db->where('solicitacao.project_id', $project_id);
-//        return $this->db->get()->result();
-//    }
-
     public function New_solic_encontro($dados_solic, $dados_solic_encontro) {
         $this->db->insert('solicitacao', $dados_solic);
         $dados_solic_encontro['solicitacao_id'] = $this->db->insert_id();
