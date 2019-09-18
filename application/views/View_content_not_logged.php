@@ -15,7 +15,7 @@ if ($this->session->flashdata('role_not_set')) {
     echo "</div><br>";
 }
 
-echo form_open('Ctrl_login');
+echo form_open('Ctrl_login/Get_user');
 
 echo form_label('Login: ');
 echo form_input(array('name' => 'login', 'required'=> 'required'), set_value('login'), 'autofocus');
