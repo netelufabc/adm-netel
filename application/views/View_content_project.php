@@ -95,7 +95,7 @@ if (isset($listaSolicitacoes) && ($listaSolicitacoes != null)) {
 
     foreach ($listaSolicitacoes as $row) {
 
-        $this->table->add_row(anchor('Ctrl_solicitacao/Solicitacao_info/' . $row->id, $row->id), $row->tipo, $row->status, $row->criado_por, $row->created_at);
+        $this->table->add_row(anchor('Ctrl_solicitacao/Solicitacao_info/' . $row->id, $row->id), $row->tipo, $row->status, $row->criado_por, mdate('%d/%m/%Y - %H:%i', mysql_to_unix($row->created_at)));
     }
     echo $this->table->generate();
 } else {

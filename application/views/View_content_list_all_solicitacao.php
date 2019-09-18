@@ -55,7 +55,7 @@ if (isset($all_solic) && ($all_solic != null)) {
             echo $row->name;
             echo "</td>";
             echo "<td>";
-            echo $row->created_at;
+            echo mdate('%d/%m/%Y - %H:%i', mysql_to_unix($row->created_at));
             echo "</td>";
             echo "</tr>";
         }

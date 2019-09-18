@@ -4,7 +4,7 @@ echo " - " . $basic_info->project_title . "</strong>" . br(2);
 
 echo "Solicitação número: " . $basic_info->id . br();
 echo "Criado por: " . $basic_info->criado_por . br();
-echo "Aberto em: " . $basic_info->created_at . br();
+echo "Aberto em: " . mdate('%d/%m/%Y - %H:%i:%s', mysql_to_unix($basic_info->created_at)) . br();
 echo "Tipo: " . $basic_info->tipo . br();
 echo "Status: " . $basic_info->status . br(2);
 
@@ -13,7 +13,7 @@ switch ($basic_info->tipo) {
     case 'Encontro':
 
         echo "Polo: " . $solic->polo . br();
-        echo "Data do evento: " . $solic->data . br();
+        echo "Data do evento: " . mdate('%d/%m/%Y', mysql_to_unix($solic->data)) . br();
         echo "Hora de início: " . $solic->hora_inicio . br();
         echo "Data de término: " . $solic->hora_fim . br();
         echo "Professores a participar: " . $solic->professores . br();
@@ -33,7 +33,7 @@ switch ($basic_info->tipo) {
         echo "Item a comprar: " . $solic->item_compra . br();
         echo "Especificações do item: " . $solic->especificacao_compra . br();
         echo "Unidade: " . $solic->unidade_compra . br();
-        echo "Qauntidade: " . $solic->quantidade_compra . br();
+        echo "Quantidade: " . $solic->quantidade_compra . br();
         echo "Valor do item (unidade, em R$): " . $solic->valor_compra . br();
         echo "Valor total (R$): " . $solic->valor_compra * $solic->quantidade_compra . br();
         echo "Motivação da compra: " . $solic->motivacao_compra . br();
@@ -46,13 +46,13 @@ switch ($basic_info->tipo) {
         echo "Tipo de serviço: " . $solic->tipo_servico . br();
         echo "Motivação do serviço: " . $solic->motivacao_servico . br();
         echo "Conexão do serviço com o projeto: " . $solic->conexao_servico . br();
-        echo "Prazo do serviço: " . $solic->prazo_servico . br();
+        echo "Prazo do serviço: " . mdate('%d/%m/%Y', mysql_to_unix($solic->prazo_servico)) . br();
 
         break;
 
     case 'Bolsa':
 
-        echo "Mês / Ano de referência: " . $solic->mes_ano . br();
+        echo "Mês / Ano de referência: " . mdate('%m/%Y', mysql_to_unix($solic->mes_ano)) . br();
         echo "Bolsa para: " . $solic->tutor_ou_docente . br();
         echo "A receber pagamento de bolsa:" . br(2);
         foreach ($bolsistas as $bolsista) {
