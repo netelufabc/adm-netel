@@ -8,6 +8,7 @@ class Ctrl_sysadmin extends CI_Controller {
         parent::__construct();
         $this->load->model('Model_sysadmin');
         $this->load->model('Model_administrativo');
+        $this->load->model('Model_solicitacao');
     }
 
     public function Index() {
@@ -31,7 +32,7 @@ class Ctrl_sysadmin extends CI_Controller {
 
         if ($this->form_validation->run() == TRUE) {
             $dados_session = elements(array('user_id', 'role_id'), $this->input->post());
-            $user_data = $this->Model_sysadmin->User_info($dados_session['user_id']);
+            $user_data = $this->Model_solicitacao->User_info($dados_session['user_id']);
             $sessioninfo = array('id' => $user_data->id, 'login' => $user_data->login,
                 'nome' => $user_data->name, 'email' => $user_data->email, 'role' => $dados_session['role_id']);
             $this->session->set_userdata($sessioninfo);

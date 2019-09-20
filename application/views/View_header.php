@@ -6,7 +6,7 @@
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
-        <script src="../js/js.js"></script>
+        <script src="/adm-netel/js/js.js"></script>
 
         <script>
             $(document).ready(function () {
@@ -50,7 +50,9 @@
         </script>
 
         <link rel="stylesheet" href="/adm-netel/css/style.css" type='text/css'/>
-
+        <?php
+        date_default_timezone_set("America/Sao_Paulo");
+        ?>
     </head>
     <body>
         <div id = "main" align="center">

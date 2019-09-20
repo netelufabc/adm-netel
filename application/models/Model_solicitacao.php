@@ -12,6 +12,10 @@ class Model_solicitacao extends CI_Model {
         return $this->db->get()->result();
     }
 
+    function User_info($user_id) {
+        return $this->db->get_where('user', array('id' => $user_id))->row();
+    }
+    
     /**
      * Retorna todas solicitações de um projeto.
      * @param int $project_id
@@ -126,6 +130,14 @@ class Model_solicitacao extends CI_Model {
         $this->db->insert('mensagens', $dados_msg);
         $this->session->set_flashdata('msg_ok', 'Mensagem registrada com sucesso!');
         redirect("Ctrl_solicitacao/Solicitacao_info/" . $dados_msg['solicitacao_id']);
+    }
+    
+    public function Update_solic_status($solicitacao_id, $status) {
+        $this->db->set('status', $status);
+        $this->db->set('closed_by', $this->session->userdata('id'));
+        $this->db->set('closed_at', date('Y-m-d H:i:s'));
+        $this->db->where('id', $solicitacao_id);
+        $this->db->update('solicitacao');
     }
 
 }

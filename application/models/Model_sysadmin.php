@@ -8,8 +8,4 @@ class Model_sysadmin extends CI_Model {
         return $this->db->get('roles')->result();
     }
 
-    function User_info($user_id) {
-        return $this->db->get_where('user', array('id' => $user_id))->row();
-    }
-
 }
