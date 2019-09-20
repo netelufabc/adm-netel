@@ -1,10 +1,49 @@
 <?php
 
+/**
+ * Verifica se o peão está logado, caso não, redireciona para a página inicial
+ */
+function IsLogged() {
+    if (!isset($_SESSION['id']) || $_SESSION['id'] < 1 || $_SESSION['id'] == null) {
+        redirect('Ctrl_main');
+    }
+}
+
+/**
+ * Controla quais papéis tem permissão para executar o arquivo.
+ * Admin Role = 1 sempre tem permissão.
+ * Sem argumentos considera que apenas o admin role= 1 pode acessar.
+ * Pode colocar multiplas roles, exemplo: AllowRoles(2,3,4);
+ * Caso não tenha permissão, limpa a session e manda para página de login;
+ */
+function AllowRoles() {
+    $allowed = false;
+    foreach (func_get_args() as $role) {
+        if ($_SESSION['role'] == $role) {
+            $allowed = true;
+            break;
+        } else {
+            $allowed = false;
+        }
+    }
+
+    if (!$allowed) {
+        if ($_SESSION['role'] == 1) {
+            return;
+        } else {
+            session_destroy();
+            redirect('Ctrl_main');
+        }
+    } else {
+        return;
+    }
+}
+
 function criamenu($user_id, $user_role) {
 
     if ($user_id != NULL) {
         switch ($user_role) {
-           
+
             case 1:
                 $menu = array(
                     'Ctrl_sysadmin/Info' => 'System Info',

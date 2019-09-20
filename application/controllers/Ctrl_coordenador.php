@@ -6,6 +6,8 @@ class Ctrl_coordenador extends CI_Controller {
 
     public function __construct() {
         parent::__construct();
+        IsLogged();
+        AllowRoles(3);
         $this->load->model('Model_coordenador');
     }
 

@@ -6,6 +6,8 @@ class Ctrl_sysadmin extends CI_Controller {
 
     public function __construct() {
         parent::__construct();
+        IsLogged();
+        AllowRoles();
         $this->load->model('Model_sysadmin');
         $this->load->model('Model_administrativo');
         $this->load->model('Model_solicitacao');
