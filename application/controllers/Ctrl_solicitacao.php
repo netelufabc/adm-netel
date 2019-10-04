@@ -38,6 +38,9 @@ class Ctrl_solicitacao extends CI_Controller {
             case 'Servico':
                 $solic = $this->Model_solicitacao->Get_solicitacao_servico($solicitacao_id);
                 break;
+            case 'Contratacao':
+                $solic = $this->Model_solicitacao->Get_solicitacao_contratacao($solicitacao_id);
+                break;
             default:
                 break;
         }

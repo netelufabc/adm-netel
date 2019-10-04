@@ -29,7 +29,224 @@ if ($this->session->flashdata('erro_solic')) {
 
         <h3>Contratação de Pessoal</h3>
 
-        nada aqui 
+        <?php
+        echo form_label('Tipo de contratação:') . br();
+        echo form_dropdown('tipo_contrata', array('' => 'Selecione', 'autonomo' => 'Autônomo', 'clt' => 'Celetista', 'bolsista' => 'Bolsista', 'estagiario' => 'Estagiário'));
+        echo br(1);
+        ?>
+
+        <div class="autonomo caixa" style="display:none"> 
+
+            <?php
+            echo form_open('Ctrl_project/New_solic_autonomo');
+            echo form_hidden('project_id', $project_id);
+            echo br(1);
+
+            echo form_label('Título da Vaga/Cargo Autônomo: ') . br();
+            echo form_input(array('name' => 'titulo', 'required' => 'required'), set_value('titulo'));
+            echo br(1);
+
+            echo form_label('Quantidade de vagas: ') . br();
+            echo form_input(array('name' => 'quantidade', 'type' => 'number', 'min' => '1', 'required' => 'required'), set_value('quantidade_vaga'));
+            echo br();
+
+            echo form_label('Descrição das atividades a serem desempenhadas:') . br();
+            echo form_textarea(array('name' => 'descricao', 'required' => 'required'), set_value('descricao'));
+            echo br(1);
+
+            echo form_label('Requisitos Obrigatórios:') . br();
+            echo form_textarea(array('name' => 'req_obrig', 'required' => 'required'), set_value('req_obrig'));
+            echo br(1);
+
+            echo form_label('Requisitos Desejáveis:') . br();
+            echo form_textarea(array('name' => 'req_desej'), set_value('req_desej'));
+            echo br(1);
+
+            echo form_label('Remuneração Bruta (R$):') . br();
+            echo form_input(array('name' => 'remuneracao_bruta', 'type' => 'number', 'min' => '0', 'step' => '0.01', 'required' => 'required'), set_value('remuneracao_bruta'));
+            echo br(1);
+
+            echo form_label('Tempo estimado para duração do serviço (meses): ') . br();
+            echo form_input(array('name' => 'tempo_estimado', 'type' => 'number', 'min' => '1', 'required' => 'required'), set_value('tempo_estimado'));
+            echo br();
+
+            echo form_label('Dias para divulgação da vaga: ') . br();
+            echo form_input(array('name' => 'dias_divulgacao', 'type' => 'number', 'min' => '7', 'required' => 'required'), set_value('dias_divulgacao'));
+            echo br();
+
+            echo form_label('Tipo de seleção:') . br();
+            echo form_checkbox('tipo_selecao[]', 'Curriculo', true) . "Análise Curricular" . br();
+            echo form_checkbox('tipo_selecao[]', 'Provas') . "Provas" . br();
+            echo form_checkbox('tipo_selecao[]', 'Entrevistas') . "Entrevistas" . br();
+            echo br();
+
+            echo form_submit(array('name' => 'new_solic_autonomo'), 'Criar Solicitação de Contratação Autônomo');
+            echo form_close();
+            ?>
+
+        </div>
+
+        <div class="clt caixa" style="display:none"> 
+
+            <?php
+            echo form_open('Ctrl_project/New_solic_celetista');
+            echo form_hidden('project_id', $project_id);
+            echo br(1);
+
+            echo form_label('TÍtulo da Vaga/Cargo Celetista: ') . br();
+            echo form_input(array('name' => 'titulo', 'required' => 'required'), set_value('titulo'));
+            echo br(1);
+
+            echo form_label('Quantidade de vagas: ') . br();
+            echo form_input(array('name' => 'quantidade', 'type' => 'number', 'min' => '1', 'required' => 'required'), set_value('quantidade'));
+            echo br();
+
+            echo form_label('Descrição das atividades a serem desempenhadas:') . br();
+            echo form_textarea(array('name' => 'descricao', 'required' => 'required'), set_value('descricao'));
+            echo br(1);
+
+            echo form_label('Requisitos Obrigatórios:') . br();
+            echo form_textarea(array('name' => 'req_obrig', 'required' => 'required'), set_value('req_obrig'));
+            echo br(1);
+
+            echo form_label('Requisitos Desejáveis:') . br();
+            echo form_textarea(array('name' => 'req_desej'), set_value('req_desej'));
+            echo br(1);
+
+            echo form_label('Remuneração Mensal (R$):') . br();
+            echo form_input(array('name' => 'remuneracao_mensal', 'type' => 'number', 'min' => '0', 'step' => '0.01', 'required' => 'required'), set_value('remuneracao_mensal'));
+            echo br(1);
+
+            echo form_label('Local de Trabalho:') . br();
+            echo form_input(array('name' => 'local_trabalho', 'required' => 'required'), set_value('local_trabalho'));
+            echo br(1);
+
+            echo form_label('Horário de Trabalho:') . br();
+            echo form_input(array('name' => 'horario_trabalho', 'required' => 'required'), set_value('horario_trabalho'));
+            echo br(1);
+
+            echo form_label('Dias para divulgação da vaga: ') . br();
+            echo form_input(array('name' => 'dias_divulgacao', 'type' => 'number', 'min' => '7'), set_value('dias_divulgacao'));
+            echo br();
+
+            echo form_label('Tipo de seleção:') . br();
+            echo form_checkbox('tipo_selecao[]', 'Curriculo', true) . "Análise Curricular" . br();
+            echo form_checkbox('tipo_selecao[]', 'Provas') . "Provas" . br();
+            echo form_checkbox('tipo_selecao[]', 'Entrevistas') . "Entrevistas" . br();
+            echo br();
+
+            echo form_submit(array('name' => 'new_solic_celetista'), 'Criar Solicitação de Contratação Celetista');
+            echo form_close();
+            ?>
+
+        </div>
+
+        <div class="bolsista caixa" style="display:none"> 
+
+            <?php
+            echo form_open('Ctrl_project/New_solic_bolsista');
+            echo form_hidden('project_id', $project_id);
+            echo br(1);
+
+            echo form_label('TÍtulo da Vaga/Cargo Celetista: ') . br();
+            echo form_input(array('name' => 'titulo', 'required' => 'required'), set_value('titulo'));
+            echo br(1);
+
+            echo form_label('Quantidade de vagas: ') . br();
+            echo form_input(array('name' => 'quantidade', 'type' => 'number', 'min' => '1', 'required' => 'required'), set_value('quantidade'));
+            echo br();
+
+            echo form_label('Descrição das atividades a serem desempenhadas:') . br();
+            echo form_textarea(array('name' => 'descricao', 'required' => 'required'), set_value('descricao'));
+            echo br(1);
+
+            echo form_label('Requisitos Obrigatórios:') . br();
+            echo form_textarea(array('name' => 'req_obrig', 'required' => 'required'), set_value('req_obrig'));
+            echo br(1);
+
+            echo form_label('Requisitos Desejáveis:') . br();
+            echo form_textarea(array('name' => 'req_desej'), set_value('req_desej'));
+            echo br(1);
+
+            echo form_label('Remuneração Bruta (R$):') . br();
+            echo form_input(array('name' => 'remuneracao_bruta', 'type' => 'number', 'min' => '0', 'step' => '0.01', 'required' => 'required'), set_value('remuneracao_bruta'));
+            echo br(1);
+
+            echo form_label('Local de Trabalho:') . br();
+            echo form_input(array('name' => 'local', 'required' => 'required'), set_value('local'));
+            echo br(1);
+
+            echo form_label('Horário de Trabalho:') . br();
+            echo form_input(array('name' => 'horario', 'required' => 'required'), set_value('horario'));
+            echo br(1);
+
+            echo form_label('Dias para divulgação da vaga: ') . br();
+            echo form_input(array('name' => 'dias_divulgacao', 'type' => 'number', 'min' => '7'), set_value('dias_divulgacao'));
+            echo br();
+
+            echo form_label('Tipo de seleção:') . br();
+            echo form_checkbox('tipo_selecao[]', 'Curriculo', true) . "Análise Curricular" . br();
+            echo form_checkbox('tipo_selecao[]', 'Provas') . "Provas" . br();
+            echo form_checkbox('tipo_selecao[]', 'Entrevistas') . "Entrevistas" . br();
+            echo br();
+
+            echo form_submit(array('name' => 'new_solic_bolsista'), 'Criar Solicitação de Contratação Bolsista');
+            echo form_close();
+            ?>
+
+        </div>
+
+        <div class="estagiario caixa" style="display:none"> 
+
+            <?php
+            echo form_open('Ctrl_project/New_solic_estagiario');
+            echo form_hidden('project_id', $project_id);
+            echo br(1);
+
+            echo form_label('TÍtulo da Vaga/Cargo Estagiário: ') . br();
+            echo form_input(array('name' => 'titulo', 'required' => 'required'), set_value('titulo'));
+            echo br(1);
+
+            echo form_label('Quantidade de vagas: ') . br();
+            echo form_input(array('name' => 'quantidade', 'type' => 'number', 'min' => '1', 'required' => 'required'), set_value('quantidade'));
+            echo br();
+
+            echo form_label('Descrição das atividades a serem desempenhadas:') . br();
+            echo form_textarea(array('name' => 'descricao', 'required' => 'required'), set_value('descricao'));
+            echo br(1);
+
+            echo form_label('Requisitos Obrigatórios:') . br();
+            echo form_textarea(array('name' => 'req_obrig', 'required' => 'required'), set_value('req_obrig'));
+            echo br(1);
+
+            echo form_label('Requisitos Desejáveis:') . br();
+            echo form_textarea(array('name' => 'req_desej'), set_value('req_desej'));
+            echo br(1);
+
+            echo form_label('Local de Trabalho:') . br();
+            echo form_input(array('name' => 'local', 'required' => 'required'), set_value('local'));
+            echo br(1);
+
+            echo form_label('Horário de Trabalho:') . br();
+            echo form_input(array('name' => 'horario', 'required' => 'required'), set_value('horario'));
+            echo br(1);
+
+            echo form_label('Dias para divulgação da vaga: ') . br();
+            echo form_input(array('name' => 'dias_divulgacao', 'type' => 'number', 'min' => '7'), set_value('dias_divulgacao'));
+            echo br();
+
+            echo form_label('Tipo de seleção:') . br();
+            echo form_checkbox('tipo_selecao[]', 'Curriculo', true) . "Análise Curricular" . br();
+            echo form_checkbox('tipo_selecao[]', 'Provas') . "Provas" . br();
+            echo form_checkbox('tipo_selecao[]', 'Entrevistas') . "Entrevistas" . br();
+            echo br();
+
+            echo form_submit(array('name' => 'new_solic_estagiario'), 'Criar Solicitação de Contratação Estagiário');
+            echo form_close();
+            ?>
+
+        </div>
+
     </div>
 
     <div class="green box"style="display:none">

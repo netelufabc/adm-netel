@@ -10,7 +10,7 @@ if (isset($listaProjetos)) {
     $this->table->set_template($template);
     $this->table->set_heading('NÚMERO UAB', 'TÍTULO', 'DESCRIÇÃO', 'CRIADO EM'); //, 'EDITAR'); //, 'EXCLUIR CURSO');
     foreach ($listaProjetos as $row) {
-        $this->table->add_row(anchor("Ctrl_project/Project_info/$row->project_id", $row->project_number), $row->title, $row->description, mdate('%d/%m/%Y - %H:%i', mysql_to_unix($row->create_time))); //, anchor("Ctrl_administrativo/Edit_project/$row->id"));//, img(array('src' => "images/edit_icon.jpg", 'height' => '25', 'width' => '25'))));
+        $this->table->add_row(anchor("Ctrl_tutor/Project_reports/$row->project_id", $row->project_number), $row->title, $row->description, mdate('%d/%m/%Y - %H:%i', mysql_to_unix($row->create_time))); //, anchor("Ctrl_administrativo/Edit_project/$row->id"));//, img(array('src' => "images/edit_icon.jpg", 'height' => '25', 'width' => '25'))));
     }
     echo $this->table->generate();
 } else {

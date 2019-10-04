@@ -73,6 +73,14 @@ class Model_solicitacao extends CI_Model {
         $this->db->where("solicitacao.id = $solicitacao_id");
         return $this->db->get()->row();
     }
+    
+    function Get_solicitacao_contratacao($solicitacao_id) {
+        $this->db->select('solicitacao.id as main_solicitacao_id, solicitacao_contratacao.*');
+        $this->db->from('solicitacao');
+        $this->db->join('solicitacao_contratacao', 'solicitacao.id = solicitacao_contratacao.solicitacao_id');
+        $this->db->where("solicitacao.id = $solicitacao_id");
+        return $this->db->get()->row();
+    }
 
     function Get_solicitacao_bolsa($solicitacao_id) {
         $this->db->select('solicitacao.id as main_solicitacao_id, solicitacao_bolsa.*');
@@ -94,6 +102,14 @@ class Model_solicitacao extends CI_Model {
         $this->db->insert('solicitacao', $dados_solic);
         $dados_solic_encontro['solicitacao_id'] = $this->db->insert_id();
         $this->db->insert('solicitacao_encontro', $dados_solic_encontro);
+        $this->session->set_flashdata('solic_criada_ok', 'Solicitação criada com sucesso!');
+        redirect("Ctrl_project/Project_info/" . $dados_solic['project_id']);
+    }
+    
+    public function New_solic_contratacao($dados_solic, $dados_solic_contratacao) {
+        $this->db->insert('solicitacao', $dados_solic);
+        $dados_solic_contratacao['solicitacao_id'] = $this->db->insert_id();
+        $this->db->insert('solicitacao_contratacao', $dados_solic_contratacao);
         $this->session->set_flashdata('solic_criada_ok', 'Solicitação criada com sucesso!');
         redirect("Ctrl_project/Project_info/" . $dados_solic['project_id']);
     }

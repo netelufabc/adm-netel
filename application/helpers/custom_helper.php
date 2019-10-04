@@ -68,6 +68,20 @@ function criamenu($user_id, $user_role) {
                 $menu = array(
                     'Ctrl_coordenador/List_projects' => 'Listar Projetos UAB',
                 );
+            case 4:
+                $menu = array(
+                    'Ctrl_assistente/List_projects' => 'Listar Projetos UAB',
+                );
+                break;
+            case 5:
+                $menu = array(
+                    'Ctrl_tutor/List_projects' => 'Listar Projetos UAB',
+                );
+                break;
+            case 6:
+                $menu = array(
+                    'Ctrl_tutor/List_projects' => 'Listar Projetos UAB',
+                );
                 break;
             default:
 

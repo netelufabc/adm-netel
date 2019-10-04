@@ -27,13 +27,13 @@ class Ctrl_main extends CI_Controller {
                     redirect('Ctrl_coordenador/List_projects');
                     break;
                 case 4:
-                    redirect('Ctrl_assistente');
+                    redirect('Ctrl_assistente/List_projects');
                     break;
                 case 5:
-                    redirect('Ctrl_tutor');
+                    redirect('Ctrl_tutor/List_projects');
                     break;
-                case 5:
-                    redirect('Ctrl_docente');
+                case 6:
+                    redirect('Ctrl_tutor/List_projects');
                     break;
                 default:
                     break;

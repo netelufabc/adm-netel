@@ -75,6 +75,24 @@ switch ($basic_info->tipo) {
 
         break;
 
+    case 'Contratacao':
+
+        echo "<strong>Tipo: " . $solic->tipo . "</strong>" . br();
+        echo "Título da vaga: " . $solic->titulo . br();
+        echo "Quantidade de vagas: " . $solic->quantidade . br();
+        echo "Tempo estimado para duração do serviço (meses): " . $solic->tempo_estimado . br();
+        echo "Descrição das atividades: " . $solic->descricao . br();
+        echo "Requisitos Obrigatórios: " . $solic->req_obrig . br();
+        echo "Requisitos Desejáveis: " . $solic->req_desej . br();
+        echo "Dias para divulgação: " . $solic->dias_divulgacao . br();
+        echo "Tipo de seleção: " . $solic->tipo_selecao . br();
+        echo "Remuneração Bruta (R$): " . $solic->remuneracao_bruta . br();
+        echo "Remuneração Mensal (R$): " . $solic->remuneracao_mensal . br();
+        echo "Local de trabalho: " . $solic->local_trabalho . br();
+        echo "Horário de trabalho: " . $solic->horario_trabalho . br();
+
+        break;
+
     default:
         break;
 }

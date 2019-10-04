@@ -47,6 +47,27 @@
                     }
                 });
             });
+
+            $(document).ready(function () {
+                $('[name=tipo_contrata]').change(function () {
+                    var color = $(this).val();
+                    if (color == "autonomo") {
+                        $(".caixa").not(".autonomo").hide();
+                        $(".autonomo").show();
+                    } else if (color == "clt") {
+                        $(".caixa").not(".clt").hide();
+                        $(".clt").show();
+                    } else if (color == "bolsista") {
+                        $(".caixa").not(".bolsista").hide();
+                        $(".bolsista").show();
+                    } else if (color == "estagiario") {
+                        $(".caixa").not(".estagiario").hide();
+                        $(".estagiario").show();
+                    } else {
+                        $(".caixa").hide();
+                    }
+                });
+            });
         </script>
 
         <link rel="stylesheet" href="/adm-netel/css/style.css" type='text/css'/>
