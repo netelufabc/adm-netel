@@ -255,10 +255,53 @@ class Ctrl_project extends CI_Controller {
 
     function New_solic_bolsista() {
         
+        $this->form_validation->set_rules('titulo', 'TITULO', 'required');
+        $this->form_validation->set_rules('quantidade', 'QUANTIDADE DE VAGAS', 'required');
+        $this->form_validation->set_rules('descricao', 'DESCRIÇÃO', 'required');
+        $this->form_validation->set_rules('req_obrig', 'REQUISITOS OBRIGATÓRIOS', 'required');
+        $this->form_validation->set_rules('local_trabalho', 'LOCAL DE TRABALHO', 'required');
+        $this->form_validation->set_rules('horario_trabalho', 'HORÁRIO DE TRABALHO', 'required');
+        $this->form_validation->set_rules('remuneracao_mensal', 'REMUNERAÇÃO MENSAL', 'required');
+        $this->form_validation->set_rules('dias_divulgacao', 'DIAS PARA DIVULGAÇÃO', 'required');
+
+        if ($this->form_validation->run() == TRUE) {
+            $dados_solic_celetista = elements(array('titulo', 'quantidade',
+                'descricao', 'req_obrig', 'req_desej', 'remuneracao_mensal',
+                'local_trabalho', 'horario_trabalho', 'dias_divulgacao', 'tipo_selecao'), $this->input->post());
+            $dados_solic_celetista['tipo'] = 'Bolsista';
+            $dados_solic_celetista['tipo_selecao'] = $this->Tipo_selecao($dados_solic_celetista['tipo_selecao']);
+            $dados_solic = array('project_id' => $this->input->post('project_id'),
+                'created_by' => $this->session->userdata['id'], 'tipo' => 'Contratacao',
+                'status' => 'Aberto');
+            $this->Model_solicitacao->New_solic_contratacao($dados_solic, $dados_solic_celetista);
+        } else {
+            redirect('Ctrl_project/Project_info/' . $this->input->post('project_id'));
+        }
     }
 
     function New_solic_estagiario() {
         
+        $this->form_validation->set_rules('titulo', 'TITULO', 'required');
+        $this->form_validation->set_rules('quantidade', 'QUANTIDADE DE VAGAS', 'required');
+        $this->form_validation->set_rules('descricao', 'DESCRIÇÃO', 'required');
+        $this->form_validation->set_rules('req_obrig', 'REQUISITOS OBRIGATÓRIOS', 'required');
+        $this->form_validation->set_rules('local_trabalho', 'LOCAL DE TRABALHO', 'required');
+        $this->form_validation->set_rules('horario_trabalho', 'HORÁRIO DE TRABALHO', 'required');
+        $this->form_validation->set_rules('dias_divulgacao', 'DIAS PARA DIVULGAÇÃO', 'required');
+
+        if ($this->form_validation->run() == TRUE) {
+            $dados_solic_celetista = elements(array('titulo', 'quantidade',
+                'descricao', 'req_obrig', 'req_desej', 'remuneracao_mensal',
+                'local_trabalho', 'horario_trabalho', 'dias_divulgacao', 'tipo_selecao'), $this->input->post());
+            $dados_solic_celetista['tipo'] = 'Estagiario';
+            $dados_solic_celetista['tipo_selecao'] = $this->Tipo_selecao($dados_solic_celetista['tipo_selecao']);
+            $dados_solic = array('project_id' => $this->input->post('project_id'),
+                'created_by' => $this->session->userdata['id'], 'tipo' => 'Contratacao',
+                'status' => 'Aberto');
+            $this->Model_solicitacao->New_solic_contratacao($dados_solic, $dados_solic_celetista);
+        } else {
+            redirect('Ctrl_project/Project_info/' . $this->input->post('project_id'));
+        }
     }
 
 }

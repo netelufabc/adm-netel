@@ -148,7 +148,7 @@ if ($this->session->flashdata('erro_solic')) {
             echo form_hidden('project_id', $project_id);
             echo br(1);
 
-            echo form_label('TÍtulo da Vaga/Cargo Celetista: ') . br();
+            echo form_label('TÍtulo da Vaga/Cargo Bolsista: ') . br();
             echo form_input(array('name' => 'titulo', 'required' => 'required'), set_value('titulo'));
             echo br(1);
 
@@ -168,16 +168,16 @@ if ($this->session->flashdata('erro_solic')) {
             echo form_textarea(array('name' => 'req_desej'), set_value('req_desej'));
             echo br(1);
 
-            echo form_label('Remuneração Bruta (R$):') . br();
-            echo form_input(array('name' => 'remuneracao_bruta', 'type' => 'number', 'min' => '0', 'step' => '0.01', 'required' => 'required'), set_value('remuneracao_bruta'));
+            echo form_label('Remuneração Mensal (R$):') . br();
+            echo form_input(array('name' => 'remuneracao_mensal', 'type' => 'number', 'min' => '0', 'step' => '0.01', 'required' => 'required'), set_value('remuneracao_mensal'));
             echo br(1);
 
             echo form_label('Local de Trabalho:') . br();
-            echo form_input(array('name' => 'local', 'required' => 'required'), set_value('local'));
+            echo form_input(array('name' => 'local_trabalho', 'required' => 'required'), set_value('local_trabalho'));
             echo br(1);
 
             echo form_label('Horário de Trabalho:') . br();
-            echo form_input(array('name' => 'horario', 'required' => 'required'), set_value('horario'));
+            echo form_input(array('name' => 'horario_trabalho', 'required' => 'required'), set_value('horario_trabalho'));
             echo br(1);
 
             echo form_label('Dias para divulgação da vaga: ') . br();
@@ -190,7 +190,7 @@ if ($this->session->flashdata('erro_solic')) {
             echo form_checkbox('tipo_selecao[]', 'Entrevistas') . "Entrevistas" . br();
             echo br();
 
-            echo form_submit(array('name' => 'new_solic_bolsista'), 'Criar Solicitação de Contratação Bolsista');
+            echo form_submit(array('name' => 'new_solic_celetista'), 'Criar Solicitação de Contratação Celetista');
             echo form_close();
             ?>
 
@@ -224,11 +224,11 @@ if ($this->session->flashdata('erro_solic')) {
             echo br(1);
 
             echo form_label('Local de Trabalho:') . br();
-            echo form_input(array('name' => 'local', 'required' => 'required'), set_value('local'));
+            echo form_input(array('name' => 'local_trabalho', 'required' => 'required'), set_value('local'));
             echo br(1);
 
             echo form_label('Horário de Trabalho:') . br();
-            echo form_input(array('name' => 'horario', 'required' => 'required'), set_value('horario'));
+            echo form_input(array('name' => 'horario_trabalho', 'required' => 'required'), set_value('horario'));
             echo br(1);
 
             echo form_label('Dias para divulgação da vaga: ') . br();
