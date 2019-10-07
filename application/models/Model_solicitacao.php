@@ -12,6 +12,10 @@ class Model_solicitacao extends CI_Model {
         return $this->db->get()->result();
     }
 
+    function User_info($user_id) {
+        return $this->db->get_where('user', array('id' => $user_id))->row();
+    }
+    
     /**
      * Retorna todas solicitações de um projeto.
      * @param int $project_id
@@ -69,6 +73,14 @@ class Model_solicitacao extends CI_Model {
         $this->db->where("solicitacao.id = $solicitacao_id");
         return $this->db->get()->row();
     }
+    
+    function Get_solicitacao_contratacao($solicitacao_id) {
+        $this->db->select('solicitacao.id as main_solicitacao_id, solicitacao_contratacao.*');
+        $this->db->from('solicitacao');
+        $this->db->join('solicitacao_contratacao', 'solicitacao.id = solicitacao_contratacao.solicitacao_id');
+        $this->db->where("solicitacao.id = $solicitacao_id");
+        return $this->db->get()->row();
+    }
 
     function Get_solicitacao_bolsa($solicitacao_id) {
         $this->db->select('solicitacao.id as main_solicitacao_id, solicitacao_bolsa.*');
@@ -86,23 +98,18 @@ class Model_solicitacao extends CI_Model {
         return $this->db->get()->result();
     }
 
-//    public function Get_solicitacao_info($project_id) {
-//        $this->db->select('solicitacao.*, solicitacao_encontro.id as encontro_id, solicitacao_compra.id as  compra_id,
-//                solicitacao_servico.id as evento_id, solicitacao_bolsa.id as bolsa_id, user.name as criado_por');
-//        $this->db->from('solicitacao');
-//        $this->db->join('solicitacao_encontro', 'solicitacao.id = solicitacao_encontro.solicitacao_id', 'left');
-//        $this->db->join('solicitacao_servico', 'solicitacao.id = solicitacao_servico.solicitacao_id', 'left');
-//        $this->db->join('solicitacao_compra', 'solicitacao.id = solicitacao_compra.solicitacao_id', 'left');
-//        $this->db->join('solicitacao_bolsa', 'solicitacao.id = solicitacao_bolsa.solicitacao_id', 'left');
-//        $this->db->join('user', 'user.id = solicitacao.created_by');
-//        $this->db->where('solicitacao.project_id', $project_id);
-//        return $this->db->get()->result();
-//    }
-
     public function New_solic_encontro($dados_solic, $dados_solic_encontro) {
         $this->db->insert('solicitacao', $dados_solic);
         $dados_solic_encontro['solicitacao_id'] = $this->db->insert_id();
         $this->db->insert('solicitacao_encontro', $dados_solic_encontro);
+        $this->session->set_flashdata('solic_criada_ok', 'Solicitação criada com sucesso!');
+        redirect("Ctrl_project/Project_info/" . $dados_solic['project_id']);
+    }
+    
+    public function New_solic_contratacao($dados_solic, $dados_solic_contratacao) {
+        $this->db->insert('solicitacao', $dados_solic);
+        $dados_solic_contratacao['solicitacao_id'] = $this->db->insert_id();
+        $this->db->insert('solicitacao_contratacao', $dados_solic_contratacao);
         $this->session->set_flashdata('solic_criada_ok', 'Solicitação criada com sucesso!');
         redirect("Ctrl_project/Project_info/" . $dados_solic['project_id']);
     }
@@ -139,6 +146,14 @@ class Model_solicitacao extends CI_Model {
         $this->db->insert('mensagens', $dados_msg);
         $this->session->set_flashdata('msg_ok', 'Mensagem registrada com sucesso!');
         redirect("Ctrl_solicitacao/Solicitacao_info/" . $dados_msg['solicitacao_id']);
+    }
+    
+    public function Update_solic_status($solicitacao_id, $status) {
+        $this->db->set('status', $status);
+        $this->db->set('closed_by', $this->session->userdata('id'));
+        $this->db->set('closed_at', date('Y-m-d H:i:s'));
+        $this->db->where('id', $solicitacao_id);
+        $this->db->update('solicitacao');
     }
 
 }

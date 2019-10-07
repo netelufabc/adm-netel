@@ -1,19 +1,58 @@
 <?php
 
+/**
+ * Verifica se o peão está logado, caso não, redireciona para a página inicial
+ */
+function IsLogged() {
+    if (!isset($_SESSION['id']) || $_SESSION['id'] < 1 || $_SESSION['id'] == null) {
+        redirect('Ctrl_main');
+    }
+}
+
+/**
+ * Controla quais papéis tem permissão para executar o arquivo.
+ * Admin Role = 1 sempre tem permissão.
+ * Sem argumentos considera que apenas o admin role= 1 pode acessar.
+ * Pode colocar multiplas roles, exemplo: AllowRoles(2,3,4);
+ * Caso não tenha permissão, limpa a session e manda para página de login;
+ */
+function AllowRoles() {
+    $allowed = false;
+    foreach (func_get_args() as $role) {
+        if ($_SESSION['role'] == $role) {
+            $allowed = true;
+            break;
+        } else {
+            $allowed = false;
+        }
+    }
+
+    if (!$allowed) {
+        if ($_SESSION['role'] == 1) {
+            return;
+        } else {
+            session_destroy();
+            redirect('Ctrl_main');
+        }
+    } else {
+        return;
+    }
+}
+
 function criamenu($user_id, $user_role) {
 
     if ($user_id != NULL) {
         switch ($user_role) {
-            case 10:
-                $menu = array(
-                    'processos/meus_processos' => 'Meus Processos',
-                );
-                break;
+
             case 1:
                 $menu = array(
-                    'Ctrl_administrativo/New_project' => 'Cadastrar Novo Projeto',       
-                    'processos/meus_processos' => 'Meus Processos',
-                    'projetos' => 'Projetos',
+                    'Ctrl_sysadmin/Info' => 'System Info',
+                    'Ctrl_sysadmin/Login_as' => 'Login As',
+                    'Ctrl_administrativo/List_all_solic' => 'Listar Solicitações',
+                    'Ctrl_administrativo' => 'Listar Projetos UAB',
+                    'Ctrl_administrativo/List_users' => 'Listar Usuários',
+                    'Ctrl_administrativo/New_user' => 'Cadastrar Usuários',
+                    'Ctrl_administrativo/New_project' => 'Cadastrar Novo Projeto',
                 );
                 break;
             case 2:
@@ -22,7 +61,27 @@ function criamenu($user_id, $user_role) {
                     'Ctrl_administrativo' => 'Listar Projetos UAB',
                     'Ctrl_administrativo/List_users' => 'Listar Usuários',
                     'Ctrl_administrativo/New_user' => 'Cadastrar Usuários',
-                    'Ctrl_administrativo/New_project' => 'Cadastrar Novo Projeto',                    
+                    'Ctrl_administrativo/New_project' => 'Cadastrar Novo Projeto',
+                );
+                break;
+            case 3:
+                $menu = array(
+                    'Ctrl_coordenador/List_projects' => 'Listar Projetos UAB',
+                );
+                break;
+            case 4:
+                $menu = array(
+                    'Ctrl_assistente/List_projects' => 'Listar Projetos UAB',
+                );
+                break;
+            case 5:
+                $menu = array(
+                    'Ctrl_tutor/List_projects' => 'Listar Projetos UAB',
+                );
+                break;
+            case 6:
+                $menu = array(
+                    'Ctrl_tutor/List_projects' => 'Listar Projetos UAB',
                 );
                 break;
             default:
@@ -36,6 +95,7 @@ function criamenu($user_id, $user_role) {
 }
 
 /* * ********E-MAIL******** */
+
 /**
  * by FAMT
  * 
@@ -49,13 +109,13 @@ function criamenu($user_id, $user_role) {
  */
 function enviar_mail($assunto = NULL, $corpo_msg = NULL, $endEmail = array(), $endEmailCC = array()) {
     require_once './phpmailer/PHPMailerAutoload.php';
-    
+
     $contaemail = 'netel@ufabc.edu.br';
     $pass = 'Netel2019.';
-    $assunto = 'Sistemaç ADM-NETEL: '. $assunto;
-    $corpo_msg = '<h3>Mensagem enviada pelo Sistema Adm-NETEL - UFABC</h3><br/><br/>'. $corpo_msg;
+    $assunto = 'Sistemaç ADM-NETEL: ' . $assunto;
+    $corpo_msg = '<h3>Mensagem enviada pelo Sistema Adm-NETEL - UFABC</h3><br/><br/>' . $corpo_msg;
     $destDefault = 'fabio.akira@ufabc.edu.br';
-    
+
     // O BLOCO ABAIXO INICIALIZA O ENVIO
     $mail = new PHPMailer; // INICIA A CLASSE PHPMAILER
     $mail->IsSMTP(); //ESSA OP��O HABILITA O ENVIO DE SMTP
@@ -71,7 +131,6 @@ function enviar_mail($assunto = NULL, $corpo_msg = NULL, $endEmail = array(), $e
     $mail->IsHTML(true); //ATIVA MENSAGEM NO FORMATO HTML
     $mail->Subject = utf8_decode($assunto); //ASSUNTO DA MENSAGEM
     $mail->Body = utf8_decode($corpo_msg); //$dados_mail['corpo_msg'];
-    
     //insere os destinatarios principais
     if (count($endEmail) != 0) {//se tiver especificado os destinatarios, não enviara para o destinatario padrao netel@ufabc
         foreach ($endEmail as $address) {

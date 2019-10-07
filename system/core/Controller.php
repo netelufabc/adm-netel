@@ -64,7 +64,7 @@ class CI_Controller {
 	 * @return	void
 	 */
 	public function __construct()
-	{
+	{            
 		self::$instance =& $this;
 
 		// Assign all the class objects that were instantiated by the

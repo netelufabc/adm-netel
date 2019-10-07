@@ -6,7 +6,7 @@
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
-        <script src="../js/js.js"></script>
+        <script src="/adm-netel/js/js.js"></script>
 
         <script>
             $(document).ready(function () {
@@ -47,10 +47,33 @@
                     }
                 });
             });
+
+            $(document).ready(function () {
+                $('[name=tipo_contrata]').change(function () {
+                    var color = $(this).val();
+                    if (color == "autonomo") {
+                        $(".caixa").not(".autonomo").hide();
+                        $(".autonomo").show();
+                    } else if (color == "clt") {
+                        $(".caixa").not(".clt").hide();
+                        $(".clt").show();
+                    } else if (color == "bolsista") {
+                        $(".caixa").not(".bolsista").hide();
+                        $(".bolsista").show();
+                    } else if (color == "estagiario") {
+                        $(".caixa").not(".estagiario").hide();
+                        $(".estagiario").show();
+                    } else {
+                        $(".caixa").hide();
+                    }
+                });
+            });
         </script>
 
         <link rel="stylesheet" href="/adm-netel/css/style.css" type='text/css'/>
-
+        <?php
+        date_default_timezone_set("America/Sao_Paulo");
+        ?>
     </head>
     <body>
         <div id = "main" align="center">
