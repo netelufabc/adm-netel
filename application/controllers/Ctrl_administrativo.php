@@ -6,6 +6,8 @@ class Ctrl_administrativo extends CI_Controller {
 
     public function __construct() {
         parent::__construct();
+        IsLogged();
+        AllowRoles(2);
         $this->load->model('Model_administrativo');
         $this->load->model('Model_project');
         $this->load->model('Model_solicitacao');

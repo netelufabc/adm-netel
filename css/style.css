@@ -2,6 +2,18 @@
     padding-left: 30px;
 }
 
+.div_border{
+    border-style: solid;
+    border-width: 0px;
+    margin-bottom: 5px;
+    padding: 5px;
+    width: 50%;
+}
+
+.div_border:hover{
+    background-color: lightgray;
+}
+
 textarea{
     height: 80px;
 }

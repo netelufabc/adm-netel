@@ -6,7 +6,21 @@ echo "Solicitação número: " . $basic_info->id . br();
 echo "Criado por: " . $basic_info->criado_por . br();
 echo "Aberto em: " . mdate('%d/%m/%Y - %H:%i:%s', mysql_to_unix($basic_info->created_at)) . br();
 echo "Tipo: " . $basic_info->tipo . br();
-echo "Status: " . $basic_info->status . br(2);
+echo "<strong>Status: ";
+if ($basic_info->status == "Aberto") {
+    echo "<p style=\"color: red;\">";
+    echo $basic_info->status . "</strong></p>";
+    echo form_open("Ctrl_solicitacao/Fechar_ou_cancelar_solic/$basic_info->id");
+    echo form_submit(array('name' => 'fechar_solic', 'class' => 'myButton'), 'Fechar Solicitação');
+    echo form_close();
+    echo form_open("Ctrl_solicitacao/Fechar_ou_cancelar_solic/$basic_info->id");
+    echo form_submit(array('name' => 'fechar_solic', 'class' => 'myButton'), 'Cancelar Solicitação');
+    echo form_close();
+} else {
+    echo "<p style=\"color: blue;\">";
+    echo $basic_info->status . "</strong></p>";
+    echo "em " . mdate('%d/%m/%Y às %H:%i', mysql_to_unix($basic_info->closed_at)) . " por " . $basic_info->name . br(2);
+}
 
 switch ($basic_info->tipo) {
 
@@ -61,11 +75,29 @@ switch ($basic_info->tipo) {
 
         break;
 
+    case 'Contratacao':
+
+        echo "<strong>Tipo: " . $solic->tipo . "</strong>" . br();
+        echo "Título da vaga: " . $solic->titulo . br();
+        echo "Quantidade de vagas: " . $solic->quantidade . br();
+        echo "Tempo estimado para duração do serviço (meses): " . $solic->tempo_estimado . br();
+        echo "Descrição das atividades: " . $solic->descricao . br();
+        echo "Requisitos Obrigatórios: " . $solic->req_obrig . br();
+        echo "Requisitos Desejáveis: " . $solic->req_desej . br();
+        echo "Dias para divulgação: " . $solic->dias_divulgacao . br();
+        echo "Tipo de seleção: " . $solic->tipo_selecao . br();
+        echo "Remuneração Bruta (R$): " . $solic->remuneracao_bruta . br();
+        echo "Remuneração Mensal (R$): " . $solic->remuneracao_mensal . br();
+        echo "Local de trabalho: " . $solic->local_trabalho . br();
+        echo "Horário de trabalho: " . $solic->horario_trabalho . br();
+
+        break;
+
     default:
         break;
 }
 
-echo br() . "<input value=\"Voltar\" onclick=\"JavaScript:window.history.back();\" type=\"button\" class=\"myButton\">" . br(2);
+echo br() . anchor('Ctrl_main', 'Voltar', array('class' => 'myButton')) . br(2);
 
 if ($this->session->flashdata('invalid_email')) {
     echo "<div class=\"message_error\">";
@@ -78,28 +110,35 @@ if ($this->session->flashdata('msg_ok')) {
     echo $this->session->flashdata('msg_ok');
     echo "</div><br>";
 }
+
+
+if ($basic_info->status == "Aberto") {
+    ?>
+
+    <div>
+        <button type="button" class="myButton" data-toggle="collapse" data-target="#novamsg">Nova Mensagem</button>
+        <div id="novamsg" class="collapse">
+            <?php
+            echo form_open("Ctrl_solicitacao/New_message/" . $basic_info->id);
+
+            echo br() . form_label('Mensagem: ') . br();
+            echo form_textarea(array('name' => 'mensagem', 'required' => 'required'), set_value('mensagem'), 'autofocus');
+            echo br(1);
+
+            echo form_label('Notificar por e-mail (insira o e-mail completo; utilize vírgula (,) para múltiplos e-mails; não é necessário inserir o e-mail do solicitante): ') . br();
+            echo form_textarea(array('name' => 'email_notif'), set_value('email_notif'));
+            echo br(2);
+
+            echo form_submit(array('name' => 'inserir'), 'Inserir Mensagem');
+
+            echo form_close();
+            ?>
+        </div>
+    </div>
+    <?php
+}
 ?>
 
-<div>
-    <button type="button" class="myButton" data-toggle="collapse" data-target="#novamsg">Nova Mensagem</button>
-    <div id="novamsg" class="collapse">
-        <?php
-        echo form_open("Ctrl_solicitacao/New_message/" . $basic_info->id);
-
-        echo br() . form_label('Mensagem: ') . br();
-        echo form_textarea(array('name' => 'mensagem', 'required' => 'required'), set_value('mensagem'), 'autofocus');
-        echo br(1);
-
-        echo form_label('Notificar por e-mail (insira o e-mail completo; utilize vírgula (,) para múltiplos e-mails; não é necessário inserir o e-mail do solicitante): ') . br();
-        echo form_textarea(array('name' => 'email_notif'), set_value('email_notif'));
-        echo br(2);
-
-        echo form_submit(array('name' => 'inserir'), 'Inserir Mensagem');
-
-        echo form_close();
-        ?>
-    </div>
-</div>
 
 <?php
 echo "<hr>";
@@ -108,7 +147,7 @@ echo "<h4>Mensagens:</h4>";
 if (isset($listaMsg) && ($listaMsg != null)) {
 
     echo "<table class=\"tabela2\">";
-    
+
     foreach ($listaMsg as $msg) {
         echo "<tr>";
         echo "<td>";
@@ -116,11 +155,8 @@ if (isset($listaMsg) && ($listaMsg != null)) {
         echo "</td>";
         echo "</tr>";
     }
-    
-    echo "</table>";
 
+    echo "</table>";
 } else {
     echo '<h5>NENHUMA MENSAGEM CADASTRADA</h5>';
 }
-?>
-

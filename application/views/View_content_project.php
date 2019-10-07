@@ -86,21 +86,49 @@ if ($this->session->flashdata('solic_criada_ok')) {
 }
 
 if (isset($listaSolicitacoes) && ($listaSolicitacoes != null)) {
+    ?>
+    <table id="projSolic" class="tabela">
+        <thead>
+            <tr>
+                <th onclick="sortTable(0, 'projSolic')">NÚMERO</th>
+                <th onclick="sortTable(1, 'projSolic')">TIPO</th>
+                <th onclick="sortTable(2, 'projSolic')">STATUS</th>
+                <th onclick="sortTable(3, 'projSolic')">CRIADO POR</th>
+                <th onclick="sortTable(4, 'projSolic')">CRIADO EM</th>
+            </tr>
+        </thead>
 
-    $template = array(
-        "table_open" => "<table class='tabela'>",
-    );
-    $this->table->set_template($template);
-    $this->table->set_heading('NÚMERO', 'TIPO', 'STATUS', 'CRIADO POR', 'CRIADO EM');
+        <?php
+        foreach ($listaSolicitacoes as $row) {
 
-    foreach ($listaSolicitacoes as $row) {
-
-        $this->table->add_row(anchor('Ctrl_solicitacao/Solicitacao_info/' . $row->id, $row->id), $row->tipo, $row->status, $row->criado_por, mdate('%d/%m/%Y - %H:%i', mysql_to_unix($row->created_at)));
+            echo "<tr>";
+            echo "<td>";
+            echo anchor('Ctrl_solicitacao/Solicitacao_info/' . $row->id, $row->id);
+            echo "</td>";
+            echo "<td>";
+            echo $row->tipo;
+            echo "</td>";
+            if ($row->status == "Aberto") {
+                echo "<td style=\"color: red;\">";
+            } else {
+                echo "<td style=\"color: blue;\">";
+            }
+            echo $row->status;
+            echo "</td>";
+            echo "<td>";
+            echo $row->criado_por;
+            echo "</td>";
+            echo "<td>";
+            echo mdate('%d/%m/%Y - %H:%i', mysql_to_unix($row->created_at));
+            echo "</td>";
+            echo "</tr>";
+        }
+    } else {
+        echo '<h5>NENHUMA SOLICITAÇÃO REGISTRADA</h5>';
     }
-    echo $this->table->generate();
-} else {
-    echo '<h5>NENHUMA SOLICITAÇÃO REGISTRADA</h5>';
-}
 
-echo br(2) . anchor("Ctrl_project/New_solicitacao/$project_info->id", 'Nova Solicitação', array('class' => 'myButton'));
+    echo "</table>";
 
+    echo br(2) . anchor("Ctrl_project/New_solicitacao/$project_info->id", 'Nova Solicitação', array('class' => 'myButton'));
+
+    

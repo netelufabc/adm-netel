@@ -1,6 +1,6 @@
 <?php
 
-echo "Usuário autenticado: ".$this->session->userdata('nome');
+echo "Usuário autenticado: ".$this->session->userdata('nome') . " (" .$this->session->userdata('login') . ") - " . $this->session->userdata('role');
 echo br(2);
 
 //echo "<div>";
