@@ -1,21 +1,12 @@
 <?php
 echo "<h2>Nova solicitação: </h2>";
-?>
 
-<div>
-    <select name="solic_select">
-        <option>Selecione</option>
-        <option value="red">Contratação de Pessoal</option>
-        <option value="green">Pagamento de Bolsa</option>
-        <option value="blue">Encontro Presencial</option>
-        <option value="maroon">Contratação de Serviços</option>
-        <option value="magenta">Compras</option>
-    </select>
-</div>
-<?php echo br(1) . "<input value=\"Cancelar\" onclick=\"JavaScript:window.history.back();\" type=\"button\">"; ?>
-<br><hr><br>
+echo "<div>";
+echo form_dropdown('solic_select', $new_solic_list);
+echo "</div>";
 
-<?php
+echo br() . "<input value=\"Cancelar\" onclick=\"JavaScript:window.history.back();\" type=\"button\">" . br() . "<hr>" . br();
+
 if ($this->session->flashdata('erro_solic')) {
     echo "<div class=\"message_error\">";
     echo $this->session->flashdata('erro_solic');

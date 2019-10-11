@@ -1,3 +1,18 @@
+/*
+class para caixa de upload de arquivos
+*/
+.file_upload_box {
+    border-style: groove;
+    width: fit-content;
+    margin: 5px;
+    padding: 5px;
+    border-radius: 7px;
+    border-color: #afafaf4f;
+}
+.file_upload_box:hover{
+    background-color: #efefef;
+}
+
 .form_div{
     padding-left: 30px;
 }

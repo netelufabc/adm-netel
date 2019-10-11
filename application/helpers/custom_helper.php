@@ -10,6 +10,32 @@ function IsLogged() {
 }
 
 /**
+ * Verifica se o usuário atual é coordenador ou assistente do projeto.
+ * Caso não seja um dos dois, redireciona para Ctrl_main.
+ * Admins e administrativos sempre tem acesso.
+ * @param int $user_id
+ * @param string $coordenador
+ * @param array $lista_assistentes
+ * @return void não retorna nada, deixa passar se true ou redireciona se false.
+ */
+function IsProjectOwnerOrAssist($user_id, $coordenador, $lista_assistentes) {
+    if ($_SESSION['role'] == 1 || $_SESSION['role'] == 2) {
+        return;
+    }
+
+    if ($coordenador->user_id == $user_id) {
+        return;
+    }
+
+    foreach ($lista_assistentes as $assistentes) {
+        if ($assistentes->id == $user_id) {
+            return;
+        }
+    }
+    redirect('Ctrl_main');
+}
+
+/**
  * Controla quais papéis tem permissão para executar o arquivo.
  * Admin Role = 1 sempre tem permissão.
  * Sem argumentos considera que apenas o admin role= 1 pode acessar.
@@ -39,6 +65,30 @@ function AllowRoles() {
     }
 }
 
+/**
+ * Retorna true se um dos argumentos for a role do usuário (int).
+ * Pode colocar multiplas roles, exemplo: HasRole(2,3,4);
+ * Caso não tenha permissão, retorna false.
+ */
+function HasRole() {
+    $allowed = false;
+    foreach (func_get_args() as $role) {
+        if ($_SESSION['role'] == $role) {
+            $allowed = true;
+            break;
+        } else {
+            $allowed = false;
+        }
+    }
+    return $allowed;
+}
+
+/**
+ * Cria o menu superior a partir do ID e ROLE do usuário (na session)
+ * @param int $user_id
+ * @param int $user_role
+ * @return array ou null se ID = null
+ */
 function criamenu($user_id, $user_role) {
 
     if ($user_id != NULL) {
@@ -112,8 +162,8 @@ function enviar_mail($assunto = NULL, $corpo_msg = NULL, $endEmail = array(), $e
 
     $contaemail = 'netel@ufabc.edu.br';
     $pass = 'Netel2019.';
-    $assunto = 'Sistemaç ADM-NETEL: ' . $assunto;
-    $corpo_msg = '<h3>Mensagem enviada pelo Sistema Adm-NETEL - UFABC</h3><br/><br/>' . $corpo_msg;
+    $assunto = 'Sistema ADM-NETEL: ' . $assunto;
+    $corpo_msg = '<h3>Mensagem enviada pelo Sistema Adm-NETEL - UFABC</h3><br/><br/>' . $corpo_msg ."<br><br>Este é um e-mail automático, não responda.<br>Acesse o sistema em netel.ufabc.edu.br.";
     $destDefault = 'fabio.akira@ufabc.edu.br';
 
     // O BLOCO ABAIXO INICIALIZA O ENVIO

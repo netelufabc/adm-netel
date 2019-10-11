@@ -7,15 +7,19 @@ echo "Criado por: " . $basic_info->criado_por . br();
 echo "Aberto em: " . mdate('%d/%m/%Y - %H:%i:%s', mysql_to_unix($basic_info->created_at)) . br();
 echo "Tipo: " . $basic_info->tipo . br();
 echo "<strong>Status: ";
+
 if ($basic_info->status == "Aberto") {
     echo "<p style=\"color: red;\">";
     echo $basic_info->status . "</strong></p>";
-    echo form_open("Ctrl_solicitacao/Fechar_ou_cancelar_solic/$basic_info->id");
-    echo form_submit(array('name' => 'fechar_solic', 'class' => 'myButton'), 'Fechar Solicitação');
-    echo form_close();
-    echo form_open("Ctrl_solicitacao/Fechar_ou_cancelar_solic/$basic_info->id");
-    echo form_submit(array('name' => 'fechar_solic', 'class' => 'myButton'), 'Cancelar Solicitação');
-    echo form_close();
+
+    if (HasRole(1, 2, 3) || (HasRole(4) && $basic_info->tipo == 'Encontro')) {//mostra opções de fechar e cancelar caso possua roles 1,2,3 ou role 4 e tipo da solicitação seja Encontro (assistente fecha ou cancela somente solicitação de encontro)
+        echo form_open("Ctrl_solicitacao/Fechar_ou_cancelar_solic/$basic_info->id");
+        echo form_submit(array('name' => 'fechar_solic', 'class' => 'myButton'), 'Fechar Solicitação');
+        echo form_close();
+        echo form_open("Ctrl_solicitacao/Fechar_ou_cancelar_solic/$basic_info->id");
+        echo form_submit(array('name' => 'fechar_solic', 'class' => 'myButton'), 'Cancelar Solicitação');
+        echo form_close();
+    }
 } else {
     echo "<p style=\"color: blue;\">";
     echo $basic_info->status . "</strong></p>";
@@ -128,7 +132,18 @@ if ($basic_info->status == "Aberto") {
             echo form_label('Notificar por e-mail (insira o e-mail completo; utilize vírgula (,) para múltiplos e-mails; não é necessário inserir o e-mail do solicitante): ') . br();
             echo form_textarea(array('name' => 'email_notif'), set_value('email_notif'));
             echo br(2);
+            ?>
 
+            <div class="input_fields_wrap">
+                <a href="#" class="add_field_button">Adicionar Anexo</a><br><br>
+                <div class="file_upload_box">
+                    <input type="file" name="files[]">
+                    <a href="#" class="remove_field">Remover arquivo</a>
+                </div>
+            </div>
+            <br><br>
+
+            <?php
             echo form_submit(array('name' => 'inserir'), 'Inserir Mensagem');
 
             echo form_close();
@@ -139,6 +154,28 @@ if ($basic_info->status == "Aberto") {
 }
 ?>
 
+<script>
+    $(document).ready(function () {
+        var max_fields = 20;
+        var wrapper = $(".input_fields_wrap");
+        var add_button = $(".add_field_button");
+
+        var x = 1;
+        $(add_button).click(function (e) {
+            e.preventDefault();
+            if (x < max_fields) {
+                x++;
+                $(wrapper).append('<div class=\"file_upload_box\"><input type="file" name="files[]"/><a href="#" class="remove_field">Remover arquivo</a></div>');
+            }
+        });
+
+        $(wrapper).on("click", ".remove_field", function (e) {
+            e.preventDefault();
+            $(this).parent('div').remove();
+            x--;
+        })
+    });
+</script>
 
 <?php
 echo "<hr>";
