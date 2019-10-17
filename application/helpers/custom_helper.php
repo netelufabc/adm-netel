@@ -83,6 +83,11 @@ function HasRole() {
     return $allowed;
 }
 
+function generateRandomString($length = 16) {
+    return substr(str_shuffle(str_repeat($x='0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ',
+            ceil($length/strlen($x)) )),1,$length);
+}
+
 /**
  * Cria o menu superior a partir do ID e ROLE do usuário (na session)
  * @param int $user_id

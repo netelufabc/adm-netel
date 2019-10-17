@@ -22,7 +22,7 @@ class Ctrl_solicitacao extends CI_Controller {
         $solicitacao_id = $this->uri->segment(3);
         $basic_info = $this->Model_solicitacao->Get_solicitacao_basic_info($solicitacao_id);
 
-        //verificar se usuario é assistente ou coordenador do projeto
+        //verificar se usuario é assistente ou coordenador do projeto, para evitar fraudes
         $project_id = $basic_info->project_id;
         $coordenador = $this->Model_project->Get_project_coordenador($project_id);
         $lista_assistentes = $this->Model_project->Get_project_assitentes($project_id);
@@ -34,6 +34,18 @@ class Ctrl_solicitacao extends CI_Controller {
             $basic_info->name = $closed_by_name;
         }
         $mensagens = $this->Model_solicitacao->Get_solic_msgs($solicitacao_id);
+        foreach ($mensagens as $msg) {//bloco para adicionar anexos à mensagem, se existirem
+            $msg->files = array();
+            $files = $this->Model_solicitacao->Get_msg_files($msg->id);
+            if (count($files) > 0) {
+                foreach ($files as $anexo) {
+                    array_push($msg->files, $anexo);
+                }
+            }
+        }
+
+        $classificacao = null;//para solicitacaoes de contratacao somente
+
         switch ($basic_info->tipo) {
             case 'Encontro':
                 $solic = $this->Model_solicitacao->Get_solicitacao_encontro($solicitacao_id);
@@ -50,12 +62,16 @@ class Ctrl_solicitacao extends CI_Controller {
                 break;
             case 'Contratacao':
                 $solic = $this->Model_solicitacao->Get_solicitacao_contratacao($solicitacao_id);
+                if ($solic->status == "Aguardando Netel") {//se status for aguardando netel, pega a lista d classificacao
+                    $classificacao = $this->Model_solicitacao->Get_classificacao($solicitacao_id);
+                }
                 break;
             default:
                 break;
         }
 
         $dados = array(
+            'classificacao' => $classificacao,
             'listaMsg' => $mensagens,
             'basic_info' => $basic_info,
             'solic' => $solic,
@@ -99,34 +115,37 @@ class Ctrl_solicitacao extends CI_Controller {
                 . "Projeto Número: $solic_basic_info->project_number\n"
                 . "Projeto Título: $solic_basic_info->project_title\n\n"
                 . "Mensagem:\n" . "<strong>" . $this->input->post('mensagem') . "</strong>");
-        $subject = "Projeto " . $solic_basic_info->project_number . " - Nova mensagem de " . $solic_basic_info->criado_por; //assunto da msg
-        enviar_mail($subject, $msg_body, $notif_emails_array);
+        $subject = "Projeto " . $solic_basic_info->project_number . " - Nova mensagem de " . $solic_basic_info->criado_por; //assunto da msg        
         $dados_msg['solicitacao_id'] = $solicitacao_id; //info para inserir no db
-        $dados_msg['created_by'] = $this->session->userdata('id'); //info para inserir no db
-        $this->Model_solicitacao->New_message($dados_msg); //grava msg no banco
+        $dados_msg['created_by'] = $this->session->userdata('id'); //info para inserir no db        
+        $msg_id = $this->Model_solicitacao->New_message($dados_msg); //grava msg no banco
+
+        if (count($_FILES) > 0) {//se nao há arquivos anexos, pula esta parte
+            $this->upload_files($msg_id);
+            $msg_body = $msg_body . "<br><br>Esta mensagem contém anexos, para visualizá-los, acesse o sistema do NETEL: netel.ufabc.edu.br<br><br>";
+        }
+
+        enviar_mail($subject, $msg_body, $notif_emails_array); //envia os emails
+
+        $this->session->set_flashdata('msg_ok', 'Mensagem registrada com sucesso!');
+        redirect("Ctrl_solicitacao/Solicitacao_info/" . $dados_msg['solicitacao_id']);
     }
 
-    public function upload_files($dados) {
-
+    function upload_files($msg_id = null) {//$dados) {
         $countfiles = count($_FILES['files']['name']);
 
-        if ($countfiles > 0) {
-            //verifica e cria diretorio de upload do user
-            if (!is_dir('uploads/' . $this->session->userdata['login'])) {
-                mkdir('uploads/' . $this->session->userdata['login']);
-            }
+        //verifica e cria diretorio de upload do user
+        if (!is_dir('uploads/' . $this->session->userdata['login'])) {
+            mkdir('uploads/' . $this->session->userdata['login']);
+        }
 
-            //deleta o campo status porque nÃ£o tem na tabela de upload
-            //unset($dados['status']);
-
-            for ($i = 0; $i < $countfiles; $i++) {
-                //falta definir melhor como serÃ¡ padronizado o nome do arquivo
-                $filename = $this->session->userdata['login'] . '-' . date('dmyHis\-') . utf8_decode($_FILES['files']['name'][$i]);
-                $dados['filename'] = $filename;
-                if (move_uploaded_file($_FILES['files']['tmp_name'][$i], 'uploads/' . $this->session->userdata['login'] . '/' . $filename)) {
-                   echo "ok";// $this->Model_project->Insert_upload_infos($dados);
-                }
-            }
+        for ($i = 0; $i < $countfiles; $i++) {
+            $file = array();
+            $file['msg_id'] = $msg_id;
+            $file['file_hash'] = generateRandomString();
+            $file['file_name'] = utf8_decode($_FILES['files']['name'][$i]);
+            move_uploaded_file($_FILES['files']['tmp_name'][$i], 'uploads/' . $this->session->userdata['login'] . '/' . $file['file_hash']);
+            $this->Model_solicitacao->Insert_file_info($file);
         }
     }
 
@@ -162,6 +181,36 @@ class Ctrl_solicitacao extends CI_Controller {
             'menu_item' => criamenu($this->session->userdata('id'), $this->session->userdata('role')),
         );
         $this->load->view('View_main', $dados);
+    }
+    
+    function Liberar_para_classificacao(){
+        $solic_id = $this->uri->segment(3);
+        $this->Model_solicitacao->Update_contratacao_status('Aguardando Classificacao', $solic_id);
+    }
+
+    function Insert_classificacao() {
+
+        $solic_id = $this->uri->segment(3);
+
+        if (count($this->input->post('nome')) == 0) {
+            $this->session->set_flashdata('sem_candidatos', "Nenhum candidato inserido, favor inserir ao menos um classificado, ou clicar em Nenhum Classificado");
+            redirect("Ctrl_solicitacao/Solicitacao_info/" . $solic_id);
+        }
+
+        $nome = $this->input->post('nome');
+        $exigencias = $this->input->post('exigencias');
+        $descricao = $this->input->post('descricao');
+
+        foreach ($nome as $key => $value) {
+            $classificado = array('id_solic' => $solic_id, 'posicao' => ($key + 1), 'nome' => $value, 'exigencias' => $exigencias[$key], 'descricao' => $descricao[$key]);
+            $this->Model_solicitacao->Insert_classificado($classificado);
+        }
+        $this->Model_solicitacao->Update_contratacao_status('Aguardando Netel', $solic_id);
+    }
+    
+    function Nenhum_candidato_aprovado(){
+        $solic_id = $this->uri->segment(3);
+        $this->Model_solicitacao->Update_contratacao_status('Aguardando Curriculos', $solic_id);
     }
 
 }

@@ -1,5 +1,5 @@
 <?php
-echo "<strong>Projeto número: " . $basic_info->project_number;
+echo "<strong>Projeto número: " . $basic_info->project_number;//basic_info é info da tablea solicitacoes, $solic_info é da tabela específica de cada tipo de solicitação
 echo " - " . $basic_info->project_title . "</strong>" . br(2);
 
 echo "Solicitação número: " . $basic_info->id . br();
@@ -26,7 +26,7 @@ if ($basic_info->status == "Aberto") {
     echo "em " . mdate('%d/%m/%Y às %H:%i', mysql_to_unix($basic_info->closed_at)) . " por " . $basic_info->name . br(2);
 }
 
-switch ($basic_info->tipo) {
+switch ($basic_info->tipo) {//mostra os dados de acordo com o tpo de solicitação
 
     case 'Encontro':
 
@@ -79,9 +79,9 @@ switch ($basic_info->tipo) {
 
         break;
 
-    case 'Contratacao':
+    case 'Contratacao'://bloco para solicitações de contratação
 
-        echo "<strong>Tipo: " . $solic->tipo . "</strong>" . br();
+        echo "<strong>Tipo de vaga: " . $solic->tipo . "</strong>" . br();
         echo "Título da vaga: " . $solic->titulo . br();
         echo "Quantidade de vagas: " . $solic->quantidade . br();
         echo "Tempo estimado para duração do serviço (meses): " . $solic->tempo_estimado . br();
@@ -94,6 +94,67 @@ switch ($basic_info->tipo) {
         echo "Remuneração Mensal (R$): " . $solic->remuneracao_mensal . br();
         echo "Local de trabalho: " . $solic->local_trabalho . br();
         echo "Horário de trabalho: " . $solic->horario_trabalho . br();
+        echo "Situação: <strong>" . $solic->status . "</strong>" . br();
+
+        echo "<hr>";
+        echo "<h4>Classificação dos Candidatos</h4>";
+
+        if ($this->session->flashdata('classificacao_inserida')) {
+            echo "<div class=\"message_success\">";
+            echo $this->session->flashdata('classificacao_inserida');
+            echo "</div><br>";
+        }
+
+        switch ($solic->status) {//parte relativa a classificacao dos candidatos
+            case "Aguardando Classificacao"://este é o estágio após o  administrativo do netel enviar os curriculos dos candidatos via mensagem da solicitação e autorizar o coordenador a classificar
+                echo "Adicione os candidatos aprovados, em ordem de classificação, de cima para baixo.<br><br>";
+
+                if ($this->session->flashdata('sem_candidatos')) {
+                    echo "<div class=\"message_error\">";
+                    echo $this->session->flashdata('sem_candidatos');
+                    echo "</div><br>";
+                }
+
+                echo form_open("Ctrl_solicitacao/Insert_classificacao/" . $basic_info->id);
+                ?>
+
+                <div class="classif_fields_wrap">
+                    <a href="#" class="add_classif_button">Adicionar candidato classificado</a><br><br>
+                </div>
+
+                <?php
+                echo form_submit(array('name' => 'inserir', 'class' => 'myButton'), 'Inserir Classificação');
+                echo form_close();
+
+                echo form_open("Ctrl_solicitacao/Nenhum_candidato_aprovado/$basic_info->id", array('onsubmit' => 'return confirm(\'Tem certeza que deseja informar que nenhum candidato foi aprovado?\')'));
+                echo form_submit(array('name' => 'fechar_solic', 'class' => 'myButton'), 'Nenhum Classificado');
+                echo form_close();//este botão retorna o status para Aguardando Curriculos, quando nenhum candidato é aprovado pelo coordenador
+
+                break;
+
+            case "Aguardando Curriculos"://este é o estágio padrão, quando a solicitação é criada
+                if (HasRole(1, 2)) {//se for sysadmin ou admin netel, mostra o botão para liberar o coordenador de fazer a classificacao, deve ser clicado pelo admin netel após anexar os curriculos
+                    echo form_open("Ctrl_solicitacao/Liberar_para_classificacao/$basic_info->id", array('onsubmit' => 'return confirm(\'Tem certeza que deseja liberar o coordenador para indicação dos candidatos aprovados?\')'));
+                    echo form_submit(array('name' => 'fechar_solic', 'class' => 'myButton'), 'Liberar Classificação');
+                    echo form_close();
+                } else {//se nao form sysadmin ou admin netel apenas mostra a msg para o coordenador e assistente
+                    echo "<h4>Currículos ainda não disponíveis para classificação ou não liberado pelo NETEL.</h4>";
+                }
+                break;
+
+            case "Aguardando Netel"://este é o estágio após o coordenador inserir a classificação
+                if ($classificacao != null) {
+                    foreach ($classificacao as $candidato) {//mostra candidatos classificados em ordem
+                        echo "Posição: $candidato->posicao: <strong>$candidato->nome</strong>; Exigências: $candidato->exigencias; Descrição: $candidato->descricao" . br();
+                    }
+                }
+                break;
+
+            default:
+                break;
+        }
+
+        echo "<hr>";
 
         break;
 
@@ -116,14 +177,14 @@ if ($this->session->flashdata('msg_ok')) {
 }
 
 
-if ($basic_info->status == "Aberto") {
+if ($basic_info->status == "Aberto") {//só mostra opção de inserir msg se solicitação está aberta
     ?>
 
     <div>
-        <button type="button" class="myButton" data-toggle="collapse" data-target="#novamsg">Nova Mensagem</button>
+        <button type="button" class="myButton" data-toggle="collapse" data-target="#novamsg">Mensagem / Anexo</button>
         <div id="novamsg" class="collapse">
             <?php
-            echo form_open("Ctrl_solicitacao/New_message/" . $basic_info->id);
+            echo form_open_multipart("Ctrl_solicitacao/New_message/" . $basic_info->id);
 
             echo br() . form_label('Mensagem: ') . br();
             echo form_textarea(array('name' => 'mensagem', 'required' => 'required'), set_value('mensagem'), 'autofocus');
@@ -136,10 +197,6 @@ if ($basic_info->status == "Aberto") {
 
             <div class="input_fields_wrap">
                 <a href="#" class="add_field_button">Adicionar Anexo</a><br><br>
-                <div class="file_upload_box">
-                    <input type="file" name="files[]">
-                    <a href="#" class="remove_field">Remover arquivo</a>
-                </div>
             </div>
             <br><br>
 
@@ -154,13 +211,36 @@ if ($basic_info->status == "Aberto") {
 }
 ?>
 
-<script>
+<script>//script para adicionar classificados nas solicitações de contratacao
     $(document).ready(function () {
-        var max_fields = 20;
+        var max_fields = 50;
+        var wrapper = $(".classif_fields_wrap");
+        var add_button = $(".add_classif_button");
+
+        var x = 0;
+        $(add_button).click(function (e) {
+            e.preventDefault();
+            if (x < max_fields) {
+                x++;
+                $(wrapper).append('<div class="file_upload_box"><br>Nome do candidato:  <input type="text" name="nome[]" value="" required="required" autofocus=""><br>Exigências do cargo/vaga apresentadas pelo candidato: <br><textarea name="exigencias[]" cols="40" rows="10" required="required"></textarea><br>Descrição da motivação da classificação: <br><textarea name="descricao[]" cols="40" rows="10" required="required"></textarea><br><a href="#" class="remove_field">Remover candidato</a></div>');
+            }
+        });
+
+        $(wrapper).on("click", ".remove_field", function (e) {
+            e.preventDefault();
+            $(this).parent('div').remove();
+            x--;
+        })
+    });
+</script>
+
+<script>//script para adicionar anexos às msgs
+    $(document).ready(function () {
+        var max_fields = 50;
         var wrapper = $(".input_fields_wrap");
         var add_button = $(".add_field_button");
 
-        var x = 1;
+        var x = 0;
         $(add_button).click(function (e) {
             e.preventDefault();
             if (x < max_fields) {
@@ -189,6 +269,14 @@ if (isset($listaMsg) && ($listaMsg != null)) {
         echo "<tr>";
         echo "<td>";
         echo "De: <strong>$msg->name</strong> em $msg->created_at<br><br>$msg->mensagem <br><br>";
+        if (count($msg->files) > 0) {
+            echo "Anexos (clique para download):<br><br>";
+            foreach ($msg->files as $file) {
+                $file->file_name = str_replace(' ', '_', $file->file_name); //remove tods espaços em branco para nao dar pau na hora de download
+                echo anchor('uploads/' . $this->session->userdata['login'] . "/" .
+                        $file->file_hash, $file->file_name, "download=$file->file_name") . "<br>";
+            }
+        }
         echo "</td>";
         echo "</tr>";
     }
