@@ -2,6 +2,29 @@ label{
     margin-right: 5px;
 }
 
+.roundedDivBorder{
+    border: 1px solid #797979!important;
+    border-radius: 16px;
+    width: 50%;
+    margin-bottom: 8px;
+}
+
+.contratado{
+    padding: 3px;
+    border: 1px solid #adff00;
+    background: #e4feca;
+    width: 50%;
+    margin-bottom: 7px;
+}
+
+.classificado{
+    padding: 3px;
+    border: 1px solid #ffcd00;
+    background: #f9ebb3;
+    width: 50%;
+    margin-bottom: 7px;
+}
+
 /*
 class para caixa de upload de arquivos
 */
@@ -46,6 +69,23 @@ textarea{
     padding: 5px 6px 5px 30px !important;
     /*border: 1px solid #ddd;*/
     /*margin-bottom: 12px;*/
+}
+
+.inputparcelas{
+    margin: 1px !important;
+}
+
+.inputparcelas:readonly{
+    margin: 1px !important;
+    background-color: #dddddd !important;
+}
+
+input[type=text]:disabled, input[type=date]:disabled, input[type=number]:disabled {
+    background: #dddddd;
+}
+
+input[type=text]:readonly, input[type=date]:readonly, input[type=number]:readonly {
+    background: #dddddd;
 }
 
 input[type=text], input[type=date], input[type=month], input[type=time], input[type=number], input[type=password], select, textarea {

@@ -83,16 +83,35 @@ function HasRole() {
     return $allowed;
 }
 
+/**
+ * Gera string aletória para os nomes de arquivo
+ * @param int $length tamanho da string
+ * @return string string aleatória com $lenght elementos
+ */
 function generateRandomString($length = 16) {
-    return substr(str_shuffle(str_repeat($x='0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ',
-            ceil($length/strlen($x)) )),1,$length);
+    return substr(str_shuffle(str_repeat($x = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', ceil($length / strlen($x)))), 1, $length);
+}
+
+/**
+ * Verifica se o valor informado é igual a null ou é uma string vazia (""). 
+ * Se for, retorna null, senão retorna o próprio valor.
+ * Usado para set null quando a string é vazia.
+ * @param mixed $value
+ * @return mixed
+ */
+function SetValueNotEmpty($value) {
+    if ($value != null && $value != "") {
+        return $value;
+    } else {
+        return null;
+    }
 }
 
 /**
  * Cria o menu superior a partir do ID e ROLE do usuário (na session)
  * @param int $user_id
  * @param int $user_role
- * @return array ou null se ID = null
+ * @return array ou null se ID == null
  */
 function criamenu($user_id, $user_role) {
 
@@ -168,7 +187,7 @@ function enviar_mail($assunto = NULL, $corpo_msg = NULL, $endEmail = array(), $e
     $contaemail = 'netel@ufabc.edu.br';
     $pass = 'Netel2019.';
     $assunto = 'Sistema ADM-NETEL: ' . $assunto;
-    $corpo_msg = '<h3>Mensagem enviada pelo Sistema Adm-NETEL - UFABC</h3><br/><br/>' . $corpo_msg ."<br><br>Este é um e-mail automático, não responda.<br>Acesse o sistema em netel.ufabc.edu.br.";
+    $corpo_msg = '<h3>Mensagem enviada pelo Sistema Adm-NETEL - UFABC</h3><br/><br/>' . $corpo_msg . "<br><br>Este é um e-mail automático, não responda.<br>Acesse o sistema em netel.ufabc.edu.br.";
     $destDefault = 'fabio.akira@ufabc.edu.br';
 
     // O BLOCO ABAIXO INICIALIZA O ENVIO

@@ -206,4 +206,53 @@ class Model_solicitacao extends CI_Model {
         return $this->db->get()->result();
     }
 
+    /**
+     * Pega todas parcelas cadastradas para pagamento do candidato autonomo classificado.
+     * Query: select * from pagamento_autonomo where pagamento_autonomo.id_classificado = $classificado_id order by pagamento_autonomo.parcela_num;
+     * @param int $classificado_id
+     * @return ARRAY Array de objetos do BD
+     */
+    function Get_parcelas($classificado_id) {
+        $this->db->select('pagamento_autonomo.*')
+                ->from('pagamento_autonomo')
+                ->where('pagamento_autonomo.id_classificado', $classificado_id)
+                ->order_by('parcela_num', 'ASC');
+        return $this->db->get()->result();
+    }
+
+    /**
+     * Atualiza a situação do candidato classificado.
+     * Query: "UPDATE `classificacao_contratacao` SET `situacao` = $situacao WHERE `id` = $contratado_id"
+     * @param int $contratado_id
+     * @param string $situacao
+     */
+    function Set_contratado_status($contratado_id, $situacao) {
+        $this->db->update('classificacao_contratacao', array('situacao' => $situacao), "id = $contratado_id");
+    }
+
+    /**
+     * Remove parcela do banco onde o usuário nao especificou data ou valor
+     * Query: delete from pagamento_autonomo where id = $id_parcela;
+     * @param int $id_parcela
+     */
+    function Delete_parcela($id_parcela) {
+        $this->db->delete('pagamento_autonomo', array('id' => $id_parcela));
+    }
+
+    /**
+     * Insere dados de parcela não existentes na tabela pagamento_autonomo
+     * @param ARRAY $dados_parcela
+     */
+    function Insert_parcela($dados_parcela) {
+        $this->db->insert('pagamento_autonomo', $dados_parcela);
+    }
+    
+    /**
+     * Atualiza dados de parcela existente na tabela pagamento_autonomo
+     * @param ARRAY $dados_parcela
+     */
+    function Update_parcela($dados_parcela) {
+        $this->db->update('pagamento_autonomo', $dados_parcela, "id = $dados_parcela->id");
+    }
+
 }

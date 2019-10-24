@@ -16,6 +16,9 @@ class Ctrl_solicitacao extends CI_Controller {
         
     }
 
+    /**
+     * Página inicial view_content_solicitacao
+     */
     function Solicitacao_info() {
 
         $bolsistas = null;
@@ -44,8 +47,6 @@ class Ctrl_solicitacao extends CI_Controller {
             }
         }
 
-        $classificacao = null;//para solicitacaoes de contratacao somente
-
         switch ($basic_info->tipo) {
             case 'Encontro':
                 $solic = $this->Model_solicitacao->Get_solicitacao_encontro($solicitacao_id);
@@ -62,16 +63,12 @@ class Ctrl_solicitacao extends CI_Controller {
                 break;
             case 'Contratacao':
                 $solic = $this->Model_solicitacao->Get_solicitacao_contratacao($solicitacao_id);
-                if ($solic->status == "Aguardando Netel") {//se status for aguardando netel, pega a lista d classificacao
-                    $classificacao = $this->Model_solicitacao->Get_classificacao($solicitacao_id);
-                }
                 break;
             default:
                 break;
         }
 
         $dados = array(
-            'classificacao' => $classificacao,
             'listaMsg' => $mensagens,
             'basic_info' => $basic_info,
             'solic' => $solic,
@@ -83,8 +80,190 @@ class Ctrl_solicitacao extends CI_Controller {
         $this->load->view('View_main', $dados);
     }
 
-    function New_message() {
+    /**
+     * Página inicial view_content_classificacao
+     */
+    function Classificacao_info() {
 
+        $solicitacao_id = $this->uri->segment(3);
+        $basic_info = $this->Model_solicitacao->Get_solicitacao_basic_info($solicitacao_id);
+
+        //verificar se usuario é assistente ou coordenador do projeto, para evitar fraudes
+        $project_id = $basic_info->project_id;
+        $coordenador = $this->Model_project->Get_project_coordenador($project_id);
+        $lista_assistentes = $this->Model_project->Get_project_assitentes($project_id);
+        IsProjectOwnerOrAssist($this->session->userdata['id'], $coordenador, $lista_assistentes);
+        //FIM verificar se usuario é assistente ou coordenador do projeto
+
+        if ($basic_info->closed_by != null) {
+            $closed_by_name = $this->Model_solicitacao->User_info($basic_info->closed_by)->name;
+            $basic_info->name = $closed_by_name;
+        }
+
+        $classificacao = null; //para solicitacaoes de contratacao somente
+        $solic = $this->Model_solicitacao->Get_solicitacao_contratacao($solicitacao_id);
+        if ($solic->status == "Aguardando Netel") {//se status for aguardando netel, pega a lista d classificacao
+            $classificacao = $this->Model_solicitacao->Get_classificacao($solicitacao_id);
+        }
+
+        if ($classificacao != null) {
+            foreach ($classificacao as $classificado) {
+                if ($classificado->situacao == 'Contratado') {
+                    $classificado->parcelas = $this->Model_solicitacao->Get_parcelas($classificado->id);
+                }
+            }
+        }
+
+        $dados = array(
+            'classificacao' => $classificacao,
+            'basic_info' => $basic_info,
+            'solic' => $solic,
+            'view_menu' => 'View_menu.php',
+            'view_content' => 'View_content_classificacao',
+            'menu_item' => criamenu($this->session->userdata('id'), $this->session->userdata('role')),
+        );
+        $this->load->view('View_main', $dados);
+    }
+
+    /**
+     * Função que insere, remove e atualiza do banco de dados as parcelas de autônomo.
+     * Botão "Definir Parcelas" em view_content_classificacao.
+     * Mexa por sua conta e risco.
+     */
+    function Set_pagamento() {
+        $solicitacao_id = $this->uri->segment(3);
+        $classificado_id = $this->uri->segment(4);
+
+        $valor_parcelas = $this->input->post('parcelavalor');
+        $data_parcelas = $this->input->post('parceladata');
+        $id_parcelas = $this->input->post('parcela');
+        $status_parcelas = $this->input->post('status');
+
+        $today = date('Y-m-d'); //verificar se as datas são maiores que data do dia
+        foreach ($data_parcelas as $key => $value) {
+            if (($data_parcelas{$key} <= $today) && ($status_parcelas{$key} != 'Pago') && ($data_parcelas{$key} != '')) {
+                $this->session->set_flashdata('sem_parcelas', "Datas devem ser maior que a data de hoje!");
+                redirect('Ctrl_solicitacao/Classificacao_info/' . $solicitacao_id);
+            }
+        }//fim verificar se as datas são maiores que data do dia        
+
+        $remuneracao_bruta = $this->input->post('remuneracao_bruta'); //verificar se soma das parcelas é igual valor total do pagamento
+        $soma_parecelas = 0;
+        foreach ($valor_parcelas as $key => $value) {
+            $soma_parecelas += $valor_parcelas{$key};
+        }
+        if ($soma_parecelas != $remuneracao_bruta) {
+            $this->session->set_flashdata('sem_parcelas', "A soma dos valores das parcelas ($soma_parecelas) deve ser igual a remuneração total bruta ($remuneracao_bruta).");
+            redirect('Ctrl_solicitacao/Classificacao_info/' . $solicitacao_id);
+        }//fim verificar se soma das parcelas é igual valor total do pagamento
+
+        $parcelas = array(); //monta array com objetos 'parcela'
+        foreach ($id_parcelas as $key => $value) {
+            $parcela_temp = new stdClass();
+            $parcela_temp->id = SetValueNotEmpty($id_parcelas{$key});
+            $parcela_temp->data_pag = SetValueNotEmpty($data_parcelas{$key});
+            $parcela_temp->valor_pag = SetValueNotEmpty($valor_parcelas{$key});
+            $parcela_temp->status_pag = SetValueNotEmpty($status_parcelas{$key});
+            $parcela_temp->acao = null;
+            array_push($parcelas, $parcela_temp);
+        }//fim monta array
+
+        foreach ($parcelas as $key => $parcela) {//estabelece acoes para cada parcela, remove caso dados inserido invalidos ou null
+            if ($parcela->id != null) {//se ID existe no banco
+                if ($parcela->data_pag == null || $parcela->valor_pag == null) {
+                    $parcela->acao = 'remover'; //remove do banco
+                } else {
+                    if ($parcela->status_pag != 'Pago') {//se já foi pago, nao mexe, senão altera status
+                        $parcela->status_pag = 'Aguardando autorização';
+                    }
+                    $parcela->acao = 'atualizar'; //atualiza no banco                        
+                }
+            } else {//se ID não existe no banco (nova inclusao de parcela)
+                if ($parcela->data_pag == null || $parcela->valor_pag == null) {//se um dos campos for null, nao faz nada
+                    unset($parcelas{$key});
+                } else {//se todos campos preenchidos, insere
+                    $parcela->status_pag = 'Aguardando autorização';
+                    $parcela->acao = 'inserir';
+                }
+            }
+        }//fim estabelece acoes para cada parcela
+
+        if (count($parcelas) > 0) {// remover do banco
+            foreach ($parcelas as $key => $parcela) {//remove onde nao foi preenchido os campos
+                if ($parcela->acao == 'remover') {
+                    $this->Model_solicitacao->Delete_parcela($parcela->id); //remove do banco
+                    unset($parcelas{$key});
+                }
+            }
+        }// fim remover do banco
+
+        if (count($parcelas) > 0) {
+            usort($parcelas, function($a, $b) { //sort array por data
+                return strcmp($a->data_pag, $b->data_pag);
+            });
+        } else {//retorna erro se não foi inserido ao menos uma data e valor.            
+            $this->session->set_flashdata('sem_parcelas', "Defina ao menos uma para pagamento (data e valor)");
+            redirect('Ctrl_solicitacao/Classificacao_info/' . $solicitacao_id);
+        }
+
+        $parcela_num = 1; //ajustar coluna parcela_num da tabela
+        foreach ($parcelas as $parcela) {
+            $parcela->parcela_num = $parcela_num;
+            $parcela_num++;
+        }//fim ajustar coluna parcela_num da tabela
+
+        foreach ($parcelas as $key => $parcela) {// inserir e atualizar o banco
+            $parcela->id_classificado = $classificado_id;
+            if ($parcela->acao == 'atualizar') {
+                unset($parcela->acao);
+                $this->Model_solicitacao->Update_parcela($parcela); //atualiza no banco
+            } elseif ($parcela->acao == 'inserir') {
+                unset($parcela->acao);
+                $this->Model_solicitacao->Insert_parcela($parcela); //insere no banco
+            }
+        }//fim inserir e atualizar do banco
+
+        $this->session->set_flashdata('pag_atualizado', "Parcelas de pagamento atualizadas."); //se der tudo certo, retorna
+        redirect('Ctrl_solicitacao/Classificacao_info/' . $solicitacao_id);
+    }
+
+    /**
+     * Função do botão "Marcar como contratado" na tabela de classificados em 
+     * view_content_classificacao, para o administrativo somente.
+     */
+    function Set_contratado() {
+        $classificado_id = $this->uri->segment(3);
+        $solicitacao_id = $this->uri->segment(4);
+        $this->Model_solicitacao->Set_contratado_status($classificado_id, 'Contratado');
+        $this->session->set_flashdata('classif_alterada', "Classificacao alterada para contratado");
+        redirect('Ctrl_solicitacao/Classificacao_info/' . $solicitacao_id);
+    }
+
+    /**
+     * Função do botão "Marcar como classificado" na tabela de classificados em 
+     * view_content_classificacao, para o administrativo somente.
+     */
+    function Set_classificado() {
+        $classificado_id = $this->uri->segment(3);
+        $solicitacao_id = $this->uri->segment(4);
+
+        $parcelas = $this->Model_solicitacao->Get_parcelas($classificado_id);//verifica se alguma parcela já foi paga. se sim, redireciona com erro
+        foreach ($parcelas as $parcela) {
+            if ($parcela->status_pag == 'Pago') {
+                $this->session->set_flashdata('parcela_paga', "Não é possível alterar o status, alguma parcela já foi paga!");
+                redirect('Ctrl_solicitacao/Classificacao_info/' . $solicitacao_id);
+            }
+        }
+
+        foreach ($parcelas as $parcela) {//apaga todas parcelas e set como classificado, caso nenhuma parcela foi paga
+            $this->Model_solicitacao->Delete_parcela($parcela->id);
+        }
+        $this->Model_solicitacao->Set_contratado_status($classificado_id, 'Classificado');
+        $this->session->set_flashdata('classif_alterada', "Classificacao alterada para classificado");
+        redirect('Ctrl_solicitacao/Classificacao_info/' . $solicitacao_id);
+    }
+
+    function New_message() {
         $solicitacao_id = $this->uri->segment(3);
         $this->form_validation->set_rules('mensagem', 'MENSAGEM', 'required');
 
@@ -149,8 +328,10 @@ class Ctrl_solicitacao extends CI_Controller {
         }
     }
 
+    /**
+     * Página view_content_confirma_fechar, botões fechar ou cancelar da página de solicitações
+     */
     function Fechar_ou_cancelar_solic() {
-
         $solicitacao_id = $this->uri->segment(3);
 
         $this->form_validation->set_rules('mensagem', 'MENSAGEM', 'required');
@@ -182,12 +363,18 @@ class Ctrl_solicitacao extends CI_Controller {
         );
         $this->load->view('View_main', $dados);
     }
-    
-    function Liberar_para_classificacao(){
+
+    /**
+     * Botão "LIberar Classificacao" do formulario em view_content_classificacao
+     */
+    function Liberar_para_classificacao() {
         $solic_id = $this->uri->segment(3);
         $this->Model_solicitacao->Update_contratacao_status('Aguardando Classificacao', $solic_id);
     }
 
+    /**
+     * Botão "Inserir Classificacao" do formulario em view_content_classificacao
+     */
     function Insert_classificacao() {
 
         $solic_id = $this->uri->segment(3);
@@ -207,8 +394,11 @@ class Ctrl_solicitacao extends CI_Controller {
         }
         $this->Model_solicitacao->Update_contratacao_status('Aguardando Netel', $solic_id);
     }
-    
-    function Nenhum_candidato_aprovado(){
+
+    /**
+     * Botão "Nenhum Aprovado" do formulário de classificacao (view_content_classificacao)
+     */
+    function Nenhum_candidato_aprovado() {
         $solic_id = $this->uri->segment(3);
         $this->Model_solicitacao->Update_contratacao_status('Aguardando Curriculos', $solic_id);
     }

@@ -1,5 +1,5 @@
 <?php
-echo "<strong>Projeto número: " . $basic_info->project_number;//basic_info é info da tablea solicitacoes, $solic_info é da tabela específica de cada tipo de solicitação
+echo "<strong>Projeto número: " . $basic_info->project_number; //basic_info é info da tablea solicitacoes, $solic_info é da tabela específica de cada tipo de solicitação
 echo " - " . $basic_info->project_title . "</strong>" . br(2);
 
 echo "Solicitação número: " . $basic_info->id . br();
@@ -27,7 +27,6 @@ if ($basic_info->status == "Aberto") {
 }
 
 switch ($basic_info->tipo) {//mostra os dados de acordo com o tpo de solicitação
-
     case 'Encontro':
 
         echo "Polo: " . $solic->polo . br();
@@ -96,67 +95,111 @@ switch ($basic_info->tipo) {//mostra os dados de acordo com o tpo de solicitaç�
         echo "Horário de trabalho: " . $solic->horario_trabalho . br();
         echo "Situação: <strong>" . $solic->status . "</strong>" . br();
 
-        echo "<hr>";
-        echo "<h4>Classificação dos Candidatos</h4>";
-
-        if ($this->session->flashdata('classificacao_inserida')) {
-            echo "<div class=\"message_success\">";
-            echo $this->session->flashdata('classificacao_inserida');
-            echo "</div><br>";
-        }
-
-        switch ($solic->status) {//parte relativa a classificacao dos candidatos
-            case "Aguardando Classificacao"://este é o estágio após o  administrativo do netel enviar os curriculos dos candidatos via mensagem da solicitação e autorizar o coordenador a classificar
-                echo "Adicione os candidatos aprovados, em ordem de classificação, de cima para baixo.<br><br>";
-
-                if ($this->session->flashdata('sem_candidatos')) {
-                    echo "<div class=\"message_error\">";
-                    echo $this->session->flashdata('sem_candidatos');
-                    echo "</div><br>";
-                }
-
-                echo form_open("Ctrl_solicitacao/Insert_classificacao/" . $basic_info->id);
-                ?>
-
-                <div class="classif_fields_wrap">
-                    <a href="#" class="add_classif_button">Adicionar candidato classificado</a><br><br>
-                </div>
-
-                <?php
-                echo form_submit(array('name' => 'inserir', 'class' => 'myButton'), 'Inserir Classificação');
-                echo form_close();
-
-                echo form_open("Ctrl_solicitacao/Nenhum_candidato_aprovado/$basic_info->id", array('onsubmit' => 'return confirm(\'Tem certeza que deseja informar que nenhum candidato foi aprovado?\')'));
-                echo form_submit(array('name' => 'fechar_solic', 'class' => 'myButton'), 'Nenhum Classificado');
-                echo form_close();//este botão retorna o status para Aguardando Curriculos, quando nenhum candidato é aprovado pelo coordenador
-
-                break;
-
-            case "Aguardando Curriculos"://este é o estágio padrão, quando a solicitação é criada
-                if (HasRole(1, 2)) {//se for sysadmin ou admin netel, mostra o botão para liberar o coordenador de fazer a classificacao, deve ser clicado pelo admin netel após anexar os curriculos
-                    echo form_open("Ctrl_solicitacao/Liberar_para_classificacao/$basic_info->id", array('onsubmit' => 'return confirm(\'Tem certeza que deseja liberar o coordenador para indicação dos candidatos aprovados?\')'));
-                    echo form_submit(array('name' => 'fechar_solic', 'class' => 'myButton'), 'Liberar Classificação');
-                    echo form_close();
-                } else {//se nao form sysadmin ou admin netel apenas mostra a msg para o coordenador e assistente
-                    echo "<h4>Currículos ainda não disponíveis para classificação ou não liberado pelo NETEL.</h4>";
-                }
-                break;
-
-            case "Aguardando Netel"://este é o estágio após o coordenador inserir a classificação
-                if ($classificacao != null) {
-                    foreach ($classificacao as $candidato) {//mostra candidatos classificados em ordem
-                        echo "Posição: $candidato->posicao: <strong>$candidato->nome</strong>; Exigências: $candidato->exigencias; Descrição: $candidato->descricao" . br();
-                    }
-                }
-                break;
-
-            default:
-                break;
-        }
+        echo br() . anchor('Ctrl_solicitacao/Classificacao_info/' . $basic_info->id, 'Classificacao', array('class' => 'myButton')) . br(2);
 
         echo "<hr>";
+//        echo "<hr>";
+//        echo "<h4>Classificação dos Candidatos</h4>";
+//
+//        
+//        
+//        if ($this->session->flashdata('classificacao_inserida')) {
+//            echo "<div class=\"message_success\">";
+//            echo $this->session->flashdata('classificacao_inserida');
+//            echo "</div><br>";
+//        }
+//
+//        switch ($solic->status) {//parte relativa a classificacao dos candidatos
+//            case "Aguardando Classificacao"://este é o estágio após o  administrativo do netel enviar os curriculos dos candidatos via mensagem da solicitação e autorizar o coordenador a classificar
+//                echo "Adicione os candidatos aprovados, em ordem de classificação, de cima para baixo.<br><br>";
+//
+//                if ($this->session->flashdata('sem_candidatos')) {
+//                    echo "<div class=\"message_error\">";
+//                    echo $this->session->flashdata('sem_candidatos');
+//                    echo "</div><br>";
+//                }
+//                
+        ?>
 
-        break;
+        <!--                <div class="classif_fields_wrap">
+                            <a href="#" class="add_classif_button">Adicionar candidato classificado</a><br><br>
+                        </div>-->
+
+    <?php
+////                if ($solic->tipo == "Autonomo") {
+////                    echo form_hidden('solic_autonomo_pag', '1');
+////                    echo "Parcela 1: Data: ";
+////                    echo form_input(array('name' => 'parcela1data', 'type' => 'date', 'required' => 'required'), set_value('parcela1data'));
+////                    echo "Valor (R$): ";
+////                    echo form_input(array('name' => 'parcela1valor', 'type' => 'number', 'min' => '0', 'step' => '0.01', 'required' => 'required'), set_value('parcela1valor')) . br();
+////                    echo "Parcela 2: Data: ";
+////                    echo form_input(array('name' => 'parcela2data', 'type' => 'date', 'required' => 'required'), set_value('parcela2data'));
+////                    echo "Valor (R$): ";
+////                    echo form_input(array('name' => 'parcela2valor', 'type' => 'number', 'min' => '0', 'step' => '0.01', 'required' => 'required'), set_value('parcela2valor')) . br();
+////                    echo "Parcela 3: Data: ";
+////                    echo form_input(array('name' => 'parcela3data', 'type' => 'date', 'required' => 'required'), set_value('parcela3data'));
+////                    echo "Valor (R$): ";
+////                    echo form_input(array('name' => 'parcela3valor', 'type' => 'number', 'min' => '0', 'step' => '0.01', 'required' => 'required'), set_value('parcela3valor')) . br();
+////                }
+//
+//                echo form_open("Ctrl_solicitacao/Insert_classificacao/" . $basic_info->id);
+//                echo form_submit(array('name' => 'inserir', 'class' => 'myButton'), 'Inserir Classificação');
+//                echo form_close();
+//
+//                echo form_open("Ctrl_solicitacao/Nenhum_candidato_aprovado/$basic_info->id", array('onsubmit' => 'return confirm(\'Tem certeza que deseja informar que nenhum candidato foi aprovado?\')'));
+//                echo form_submit(array('name' => 'fechar_solic', 'class' => 'myButton'), 'Nenhum Classificado');
+//                echo form_close(); //este botão retorna o status para Aguardando Curriculos, quando nenhum candidato é aprovado pelo coordenador
+//
+//                break;
+//
+//            case "Aguardando Curriculos"://este é o estágio padrão, quando a solicitação é criada
+//                if (HasRole(1, 2)) {//se for sysadmin ou admin netel, mostra o botão para liberar o coordenador de fazer a classificacao, deve ser clicado pelo admin netel após anexar os curriculos
+//                    echo form_open("Ctrl_solicitacao/Liberar_para_classificacao/$basic_info->id", array('onsubmit' => 'return confirm(\'Tem certeza que deseja liberar o coordenador para indicação dos candidatos aprovados?\')'));
+//                    echo form_submit(array('name' => 'fechar_solic', 'class' => 'myButton'), 'Liberar Classificação');
+//                    echo form_close();
+//                } else {//se nao form sysadmin ou admin netel apenas mostra a msg para o coordenador e assistente
+//                    echo "<h4>Currículos ainda não disponíveis para classificação ou não liberado pelo NETEL.</h4>";
+//                }
+//                break;
+//
+//            case "Aguardando Netel"://este é o estágio após o coordenador inserir a classificação
+//                if ($classificacao != null) {
+//                    echo "<h4>Aguardando contratação pelo NETEL.</h4>";
+//
+//                    if (HasRole(1, 2)) {
+//                        echo form_open('');
+//                        echo "Clique no checkbox para marcar como contratado: " . br();
+//                    }
+//
+//                    foreach ($classificacao as $candidato) {//mostra candidatos classificados em ordem
+//                        if ($candidato->situacao == 'Contratado') {
+//                            echo "<div class=\"contratado\">";
+//                        } elseif ($candidato->situacao == 'Classificado') {
+//                            echo "<div class=\"classificado\">";
+//                            if (HasRole(1, 2)) {
+//                                echo form_checkbox('contratado[]', $candidato->id);
+//                            }
+//                        }
+//
+//                        echo "Posição: $candidato->posicao: <strong>$candidato->nome</strong>; Exigências: $candidato->exigencias; Descrição: $candidato->descricao Situação: $candidato->situacao" . br();
+//                        echo "</div>";
+//                    }
+//                    echo br();
+//
+//                    if (HasRole(1, 2)) {
+//                        echo form_submit(array('name' => 'fechar_solic', 'class' => 'myButton'), 'Marcar Contratados');
+//                        echo form_close();
+//                    }
+//                }
+//                break;
+//
+//            default:
+//                break;
+//        }
+//
+//        echo "<hr>";
+//
+//        break;
 
     default:
         break;
@@ -165,7 +208,7 @@ switch ($basic_info->tipo) {//mostra os dados de acordo com o tpo de solicitaç�
 echo br() . anchor('Ctrl_main', 'Voltar', array('class' => 'myButton')) . br(2);
 
 if ($this->session->flashdata('invalid_email')) {
-    echo "<div class=\"message_error\">";
+    echo "<div class = \"message_error\">";
     echo $this->session->flashdata('invalid_email');
     echo "</div><br>";
 }
@@ -211,7 +254,7 @@ if ($basic_info->status == "Aberto") {//só mostra opção de inserir msg se sol
 }
 ?>
 
-<script>//script para adicionar classificados nas solicitações de contratacao
+<!--<script>//script para adicionar classificados nas solicitações de contratacao
     $(document).ready(function () {
         var max_fields = 50;
         var wrapper = $(".classif_fields_wrap");
@@ -222,7 +265,13 @@ if ($basic_info->status == "Aberto") {//só mostra opção de inserir msg se sol
             e.preventDefault();
             if (x < max_fields) {
                 x++;
-                $(wrapper).append('<div class="file_upload_box"><br>Nome do candidato:  <input type="text" name="nome[]" value="" required="required" autofocus=""><br>Exigências do cargo/vaga apresentadas pelo candidato: <br><textarea name="exigencias[]" cols="40" rows="10" required="required"></textarea><br>Descrição da motivação da classificação: <br><textarea name="descricao[]" cols="40" rows="10" required="required"></textarea><br><a href="#" class="remove_field">Remover candidato</a></div>');
+                $(wrapper).append('<div class="file_upload_box"><br>Nome do candidato:  \n\
+                    <input type="text" name="nome[]" value="" required="required" autofocus="">\n\
+                    <br>Exigências do cargo/vaga apresentadas pelo candidato:\n\
+                    <br><textarea name="exigencias[]" cols="40" rows="10" required="required">\n\
+                    </textarea><br>Descrição da motivação da classificação: <br><textarea name="descricao[]"\n\
+                    cols="40" rows="10" required="required"></textarea><br><a href="#" \n\
+                    class="remove_field">Remover candidato</a></div>');
             }
         });
 
@@ -232,7 +281,7 @@ if ($basic_info->status == "Aberto") {//só mostra opção de inserir msg se sol
             x--;
         })
     });
-</script>
+</script>-->
 
 <script>//script para adicionar anexos às msgs
     $(document).ready(function () {
@@ -285,3 +334,4 @@ if (isset($listaMsg) && ($listaMsg != null)) {
 } else {
     echo '<h5>NENHUMA MENSAGEM CADASTRADA</h5>';
 }
+                    
