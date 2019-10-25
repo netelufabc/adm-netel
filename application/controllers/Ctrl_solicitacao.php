@@ -141,6 +141,9 @@ class Ctrl_solicitacao extends CI_Controller {
 
         $today = date('Y-m-d'); //verificar se as datas são maiores que data do dia
         foreach ($data_parcelas as $key => $value) {
+            if ($data_parcelas{$key} == '') {//caso exista a parcela e usuario mande alterar sem colocar a data, seta valor = 0 para dar erro
+                $valor_parcelas{$key} = '';
+            }
             if (($data_parcelas{$key} <= $today) && ($status_parcelas{$key} != 'Pago') && ($data_parcelas{$key} != '')) {
                 $this->session->set_flashdata('sem_parcelas', "Datas devem ser maior que a data de hoje!");
                 redirect('Ctrl_solicitacao/Classificacao_info/' . $solicitacao_id);
@@ -173,7 +176,7 @@ class Ctrl_solicitacao extends CI_Controller {
                 if ($parcela->data_pag == null || $parcela->valor_pag == null) {
                     $parcela->acao = 'remover'; //remove do banco
                 } else {
-                    if ($parcela->status_pag != 'Pago') {//se já foi pago, nao mexe, senão altera status
+                    if ($parcela->status_pag != 'Pago' && $parcela->status_pag != 'Autorizado') {//se já foi pago ou autorizado, nao mexe, senão altera status
                         $parcela->status_pag = 'Aguardando autorização';
                     }
                     $parcela->acao = 'atualizar'; //atualiza no banco                        
@@ -196,6 +199,8 @@ class Ctrl_solicitacao extends CI_Controller {
                 }
             }
         }// fim remover do banco
+
+
 
         if (count($parcelas) > 0) {
             usort($parcelas, function($a, $b) { //sort array por data
@@ -247,7 +252,7 @@ class Ctrl_solicitacao extends CI_Controller {
         $classificado_id = $this->uri->segment(3);
         $solicitacao_id = $this->uri->segment(4);
 
-        $parcelas = $this->Model_solicitacao->Get_parcelas($classificado_id);//verifica se alguma parcela já foi paga. se sim, redireciona com erro
+        $parcelas = $this->Model_solicitacao->Get_parcelas($classificado_id); //verifica se alguma parcela já foi paga. se sim, redireciona com erro
         foreach ($parcelas as $parcela) {
             if ($parcela->status_pag == 'Pago') {
                 $this->session->set_flashdata('parcela_paga', "Não é possível alterar o status, alguma parcela já foi paga!");
@@ -381,7 +386,7 @@ class Ctrl_solicitacao extends CI_Controller {
 
         if (count($this->input->post('nome')) == 0) {
             $this->session->set_flashdata('sem_candidatos', "Nenhum candidato inserido, favor inserir ao menos um classificado, ou clicar em Nenhum Classificado");
-            redirect("Ctrl_solicitacao/Solicitacao_info/" . $solic_id);
+            redirect("Ctrl_solicitacao/Classificacao_info/" . $solic_id);
         }
 
         $nome = $this->input->post('nome');

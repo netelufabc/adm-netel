@@ -189,7 +189,7 @@ class Model_solicitacao extends CI_Model {
     function Update_contratacao_status($status, $solic_id) {
         $this->db->update('solicitacao_contratacao', array('status' => $status), "solicitacao_id = $solic_id");
         $this->session->set_flashdata('classificacao_inserida', 'Classificação Atualizada!');
-        redirect("Ctrl_solicitacao/Solicitacao_info/" . $solic_id);
+        redirect("Ctrl_solicitacao/Classificacao_info/" . $solic_id);
     }
 
     /**

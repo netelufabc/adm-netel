@@ -128,15 +128,17 @@ hr {
     background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0));
 }
 
+.hr1 {
+    border: dashed lightgrey 1px;
+    height:0;
+}
+
 .tabela,td,th {
     overflow: hidden;
     border: 2px solid;
     border-color: white;
     text-align-last: center;
-    padding-left: 5px;
-    padding-right: 5px;
-    padding-top: 5px;
-    padding-bottom: 5px;
+    padding: 3px;
     text-align: center;
     /* border-collapse:separate;
     /* border:solid black 1px;*/
@@ -149,10 +151,7 @@ hr {
     border: 7px solid;
     border-color: white;
     text-align-last: left;
-    padding-left: 5px;
-    padding-right: 5px;
-    padding-top: 5px;
-    padding-bottom: 5px;
+    padding: 3px;
     border-radius:15px;
     -moz-border-radius:15px;
 }

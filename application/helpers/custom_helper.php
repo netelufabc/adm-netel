@@ -141,6 +141,7 @@ function criamenu($user_id, $user_role) {
             case 3:
                 $menu = array(
                     'Ctrl_coordenador/List_projects' => 'Listar Projetos UAB',
+                    'Ctrl_coordenador/Pagamento_autonomo' => 'Pagamento de Autônomos',
                 );
                 break;
             case 4:

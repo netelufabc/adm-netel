@@ -50,14 +50,13 @@ switch ($solic->status) {//parte relativa a classificacao dos candidatos
             echo $this->session->flashdata('sem_candidatos');
             echo "</div><br>";
         }
-        ?>
 
+        echo form_open("Ctrl_solicitacao/Insert_classificacao/" . $basic_info->id);
+        ?>
         <div class="classif_fields_wrap">
             <a href="#" class="add_classif_button">Adicionar candidato classificado</a><br><br>
         </div>
-
         <?php
-        echo form_open("Ctrl_solicitacao/Insert_classificacao/" . $basic_info->id);
         echo form_submit(array('name' => 'inserir', 'class' => 'myButton'), 'Inserir Classificação');
         echo form_close();
 
@@ -176,7 +175,12 @@ switch ($solic->status) {//parte relativa a classificacao dos candidatos
                             isset($candidato->parcelas{$i}->data_pag) ? $data = $candidato->parcelas{$i}->data_pag : $data = null;
                             isset($candidato->parcelas{$i}->valor_pag) ? $valor = $candidato->parcelas{$i}->valor_pag : $valor = null;
                             isset($candidato->parcelas{$i}->status_pag) ? $status = $candidato->parcelas{$i}->status_pag : $status = 'Não definido';
-                            $status == 'Pago' ? $readonly = 'readonly' : $readonly = '';
+
+                            if ($status == 'Pago' || $status == 'Autorizado') {
+                                $readonly = 'readonly';
+                            } else {
+                                $readonly = '';
+                            }
 
                             echo form_hidden("parcela[]", $id);
                             echo form_hidden("status[]", $status);
@@ -194,6 +198,8 @@ switch ($solic->status) {//parte relativa a classificacao dos candidatos
                                 $color = 'blue';
                             } elseif ($status == 'Aguardando autorização') {
                                 $color = 'orange';
+                            } elseif ($status == 'Autorizado') {
+                                $color = 'green';
                             } else {
                                 $color = 'black';
                             }
