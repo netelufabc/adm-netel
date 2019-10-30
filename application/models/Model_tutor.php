@@ -30,7 +30,6 @@ class Model_tutor extends CI_Model {
                 ->where("tutor_report.tutor_id = $tutor_id")
                 ->where("tutor_report.project_id = $project_id")
                 ->where("tutor_report.month_year =" . $this->db->escape($month_year . "-00"));
-        $ass = $this->db->last_query();
         return $this->db->get()->row();
     }
 

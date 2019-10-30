@@ -10,6 +10,32 @@ function IsLogged() {
 }
 
 /**
+ * Verifica se o usuário atual é coordenador ou assistente do projeto.
+ * Caso não seja um dos dois, redireciona para Ctrl_main.
+ * Admins e administrativos sempre tem acesso.
+ * @param int $user_id
+ * @param string $coordenador
+ * @param array $lista_assistentes
+ * @return void não retorna nada, deixa passar se true ou redireciona se false.
+ */
+function IsProjectOwnerOrAssist($user_id, $coordenador, $lista_assistentes) {
+    if ($_SESSION['role'] == 1 || $_SESSION['role'] == 2) {
+        return;
+    }
+
+    if ($coordenador->user_id == $user_id) {
+        return;
+    }
+
+    foreach ($lista_assistentes as $assistentes) {
+        if ($assistentes->id == $user_id) {
+            return;
+        }
+    }
+    redirect('Ctrl_main');
+}
+
+/**
  * Controla quais papéis tem permissão para executar o arquivo.
  * Admin Role = 1 sempre tem permissão.
  * Sem argumentos considera que apenas o admin role= 1 pode acessar.
@@ -39,6 +65,54 @@ function AllowRoles() {
     }
 }
 
+/**
+ * Retorna true se um dos argumentos for a role do usuário (int).
+ * Pode colocar multiplas roles, exemplo: HasRole(2,3,4);
+ * Caso não tenha permissão, retorna false.
+ */
+function HasRole() {
+    $allowed = false;
+    foreach (func_get_args() as $role) {
+        if ($_SESSION['role'] == $role) {
+            $allowed = true;
+            break;
+        } else {
+            $allowed = false;
+        }
+    }
+    return $allowed;
+}
+
+/**
+ * Gera string aletória para os nomes de arquivo
+ * @param int $length tamanho da string
+ * @return string string aleatória com $lenght elementos
+ */
+function generateRandomString($length = 16) {
+    return substr(str_shuffle(str_repeat($x = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', ceil($length / strlen($x)))), 1, $length);
+}
+
+/**
+ * Verifica se o valor informado é igual a null ou é uma string vazia (""). 
+ * Se for, retorna null, senão retorna o próprio valor.
+ * Usado para set null quando a string é vazia.
+ * @param mixed $value
+ * @return mixed
+ */
+function SetValueNotEmpty($value) {
+    if ($value != null && $value != "") {
+        return $value;
+    } else {
+        return null;
+    }
+}
+
+/**
+ * Cria o menu superior a partir do ID e ROLE do usuário (na session)
+ * @param int $user_id
+ * @param int $user_role
+ * @return array ou null se ID == null
+ */
 function criamenu($user_id, $user_role) {
 
     if ($user_id != NULL) {
@@ -50,6 +124,7 @@ function criamenu($user_id, $user_role) {
                     'Ctrl_sysadmin/Login_as' => 'Login As',
                     'Ctrl_administrativo/List_all_solic' => 'Listar Solicitações',
                     'Ctrl_administrativo' => 'Listar Projetos UAB',
+                    'Ctrl_coordenador/Pagamento_autonomo' => 'Pagamento de Autônomos',
                     'Ctrl_administrativo/List_users' => 'Listar Usuários',
                     'Ctrl_administrativo/New_user' => 'Cadastrar Usuários',
                     'Ctrl_administrativo/New_project' => 'Cadastrar Novo Projeto',
@@ -59,6 +134,7 @@ function criamenu($user_id, $user_role) {
                 $menu = array(
                     'Ctrl_administrativo/List_all_solic' => 'Listar Solicitações',
                     'Ctrl_administrativo' => 'Listar Projetos UAB',
+                    'Ctrl_coordenador/Pagamento_autonomo' => 'Pagamento de Autônomos',
                     'Ctrl_administrativo/List_users' => 'Listar Usuários',
                     'Ctrl_administrativo/New_user' => 'Cadastrar Usuários',
                     'Ctrl_administrativo/New_project' => 'Cadastrar Novo Projeto',
@@ -67,6 +143,7 @@ function criamenu($user_id, $user_role) {
             case 3:
                 $menu = array(
                     'Ctrl_coordenador/List_projects' => 'Listar Projetos UAB',
+                    'Ctrl_coordenador/Pagamento_autonomo' => 'Pagamento de Autônomos',
                 );
                 break;
             case 4:
@@ -112,8 +189,8 @@ function enviar_mail($assunto = NULL, $corpo_msg = NULL, $endEmail = array(), $e
 
     $contaemail = 'netel@ufabc.edu.br';
     $pass = 'Netel2019.';
-    $assunto = 'Sistemaç ADM-NETEL: ' . $assunto;
-    $corpo_msg = '<h3>Mensagem enviada pelo Sistema Adm-NETEL - UFABC</h3><br/><br/>' . $corpo_msg;
+    $assunto = 'Sistema ADM-NETEL: ' . $assunto;
+    $corpo_msg = '<h3>Mensagem enviada pelo Sistema Adm-NETEL - UFABC</h3><br/><br/>' . $corpo_msg . "<br><br>Este é um e-mail automático, não responda.<br>Acesse o sistema em netel.ufabc.edu.br.";
     $destDefault = 'fabio.akira@ufabc.edu.br';
 
     // O BLOCO ABAIXO INICIALIZA O ENVIO
