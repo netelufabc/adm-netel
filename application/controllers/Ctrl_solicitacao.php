@@ -200,8 +200,6 @@ class Ctrl_solicitacao extends CI_Controller {
             }
         }// fim remover do banco
 
-
-
         if (count($parcelas) > 0) {
             usort($parcelas, function($a, $b) { //sort array por data
                 return strcmp($a->data_pag, $b->data_pag);

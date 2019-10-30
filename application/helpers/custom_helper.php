@@ -124,6 +124,7 @@ function criamenu($user_id, $user_role) {
                     'Ctrl_sysadmin/Login_as' => 'Login As',
                     'Ctrl_administrativo/List_all_solic' => 'Listar Solicitações',
                     'Ctrl_administrativo' => 'Listar Projetos UAB',
+                    'Ctrl_coordenador/Pagamento_autonomo' => 'Pagamento de Autônomos',
                     'Ctrl_administrativo/List_users' => 'Listar Usuários',
                     'Ctrl_administrativo/New_user' => 'Cadastrar Usuários',
                     'Ctrl_administrativo/New_project' => 'Cadastrar Novo Projeto',
@@ -133,6 +134,7 @@ function criamenu($user_id, $user_role) {
                 $menu = array(
                     'Ctrl_administrativo/List_all_solic' => 'Listar Solicitações',
                     'Ctrl_administrativo' => 'Listar Projetos UAB',
+                    'Ctrl_coordenador/Pagamento_autonomo' => 'Pagamento de Autônomos',
                     'Ctrl_administrativo/List_users' => 'Listar Usuários',
                     'Ctrl_administrativo/New_user' => 'Cadastrar Usuários',
                     'Ctrl_administrativo/New_project' => 'Cadastrar Novo Projeto',

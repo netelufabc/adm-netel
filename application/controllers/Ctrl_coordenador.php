@@ -7,7 +7,7 @@ class Ctrl_coordenador extends CI_Controller {
     public function __construct() {
         parent::__construct();
         IsLogged();
-        AllowRoles(3);
+        AllowRoles(2, 3);
         $this->load->model('Model_coordenador');
         $this->load->model('Model_solicitacao');
     }
@@ -50,9 +50,9 @@ class Ctrl_coordenador extends CI_Controller {
                     //echo "----Candidato Contratado: $candidato->id $candidato->nome" . br();
                     $parcelas = $this->Model_solicitacao->Get_parcelas($candidato->id);
                     $candidato->parcelas = $parcelas;
-                    foreach ($parcelas as $parcela) {
-                        //echo "--------Parcela Info: $parcela->id_classificado $parcela->parcela_num $parcela->valor_pag $parcela->data_pag $parcela->status_pag" . br();
-                    }
+                    //foreach ($parcelas as $parcela) {
+                    //echo "--------Parcela Info: $parcela->id_classificado $parcela->parcela_num $parcela->valor_pag $parcela->data_pag $parcela->status_pag" . br();
+                    //}
                 }
             }
         }
@@ -65,9 +65,9 @@ class Ctrl_coordenador extends CI_Controller {
         );
         $this->load->view('View_main', $dados);
     }
-    
-    function Autoriza_autonomo(){
-        $parcela_id = $this->uri->segment(3);             
+
+    function Autoriza_autonomo() {
+        $parcela_id = $this->uri->segment(3);
         $this->Model_coordenador->Set_parcela_status($parcela_id, 'Autorizado');
         $this->session->set_flashdata('pag_alterado', "Pagamento autorizado!");
         redirect('Ctrl_coordenador/Pagamento_autonomo/');

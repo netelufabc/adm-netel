@@ -208,7 +208,8 @@ class Model_solicitacao extends CI_Model {
 
     /**
      * Pega todas parcelas cadastradas para pagamento do candidato autonomo classificado.
-     * Query: select * from pagamento_autonomo where pagamento_autonomo.id_classificado = $classificado_id order by pagamento_autonomo.parcela_num;
+     * Query: select * from pagamento_autonomo
+     * where pagamento_autonomo.id_classificado = $classificado_id order by pagamento_autonomo.parcela_num;
      * @param int $classificado_id
      * @return ARRAY Array de objetos do BD
      */

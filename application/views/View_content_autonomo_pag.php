@@ -79,10 +79,9 @@ if (isset($listaProjetos) && count($listaProjetos) > 0) {
                         }
                     } else {
                         echo "Nenhum candidato contratado para esta solicitação." . br(2);
-                        echo "</div>";
                     }
+                    echo "</div>"; //class=\"roundedDivBorder\"
                 }
-                echo "</div>";
             } else {
                 echo"<h4>NENHUMA SOLICITAÇÃO DE CONTRATAÇÃO DE AUTÔNOMO REGISTRADA PARA ESTE PROJETO.</h4>";
             }
