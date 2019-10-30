@@ -14,7 +14,7 @@ if (isset($listaUsers)) {
         "table_open" => "<table class='tabela'>",
     );
     $this->table->set_template($template);
-    $this->table->set_heading('LOGIN', 'NOME', 'EMAIL', 'CRIADO EM', 'CRIADO POR');
+    $this->table->set_heading('LOGIN', 'NOME', 'EMAIL', 'CRIADO EM', 'CRIADO POR', 'PAPÉIS');
     foreach ($listaUsers as $row) {
 
         $this->table->add_row($row->login, $row->name, $row->email, $row->create_time, $row->created_by);

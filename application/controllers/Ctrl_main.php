@@ -16,47 +16,28 @@ class Ctrl_main extends CI_Controller {
 
         if ($this->session->userdata('id') != NULL) {
 
-            //$role = $this->session->userdata('role');
             switch ($this->session->userdata('role')) {
                 case 1:
-                    redirect('Ctrl_sysadm');
+                    redirect('Ctrl_sysadmin/Info');
                     break;
                 case 2:
                     redirect('Ctrl_administrativo');
                     break;
                 case 3:
-                    redirect('Ctrl_coordenador');
+                    redirect('Ctrl_coordenador/List_projects');
                     break;
                 case 4:
-                    redirect('Ctrl_assistente');
+                    redirect('Ctrl_assistente/List_projects');
                     break;
                 case 5:
-                    redirect('Ctrl_tutor');
+                    redirect('Ctrl_tutor/List_projects');
                     break;
-                case 5:
-                    redirect('Ctrl_docente');
+                case 6:
+                    redirect('Ctrl_tutor/List_projects');
                     break;
-                default://caso o usuário esteja cadastrado mas não tem papel definido
-//                    echo "ROLE note set or out of bounds (session not set?).";
-//                    $this->session->set_flashdata('role_not_set', 'Papél de usuário não definido, entre em contato com o NETEL!');
-//                    $this->session->unset_userdata(array('id', 'nome', 'login', 'email'));
+                default:
                     break;
             }
-
-//            if ($this->session->userdata('id') == null) {//verificação para quando o usuário nao tem papel definido
-//                $dados = array(
-//                    'view_content' => 'View_content_not_logged.php',
-//                );
-//                $this->load->view('View_main', $dados);
-//            } else {//se o papel estiver definido e ID ok, entra aqui
-//
-//                $dados = array(
-//                    'view_menu' => 'View_menu.php',
-//                    'view_content' => 'View_content.php',
-//                    'menu_item' => criamenu($this->session->userdata('id'), $this->session->userdata('role')),
-//                );
-//                $this->load->view('View_main', $dados);
-//            }
         }
     }
 
