@@ -11,6 +11,7 @@ class Ctrl_administrativo extends CI_Controller {
         $this->load->model('Model_administrativo');
         $this->load->model('Model_project');
         $this->load->model('Model_solicitacao');
+        $this->load->model('Model_coordenador');
     }
 
     public function Index() {
@@ -150,5 +151,22 @@ class Ctrl_administrativo extends CI_Controller {
         );
         $this->load->view('View_main', $dados);
     }
+    
+    /**
+     * Botão "marcar como pago" da view "view_content_autonomo".
+     */
+    function Set_parcela_pago(){
+        $parcela_id = $this->uri->segment(3);
+        $this->Model_coordenador->Set_parcela_status($parcela_id, 'Pago');
+        $this->session->set_flashdata('pag_alterado', "Pagamento efetuado!");
+        redirect('Ctrl_coordenador/Pagamento_autonomo/');
+    }
 
+    function Set_parcela_aguardando_autoriza(){
+        $parcela_id = $this->uri->segment(3);
+        $this->Model_coordenador->Set_parcela_status($parcela_id, 'Aguardando autorização');
+        $this->session->set_flashdata('pag_alterado', "Status alterado!");
+        redirect('Ctrl_coordenador/Pagamento_autonomo/');
+    }
+    
 }

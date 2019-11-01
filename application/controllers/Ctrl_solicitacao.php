@@ -139,13 +139,13 @@ class Ctrl_solicitacao extends CI_Controller {
         $id_parcelas = $this->input->post('parcela');
         $status_parcelas = $this->input->post('status');
 
-        $today = date('Y-m-d'); //verificar se as datas são maiores que data do dia
+        $diasParaPagar = Date('Y-m-d', strtotime('+29 days')); //minimo de dias para poder agendar pagamento de autonomo
         foreach ($data_parcelas as $key => $value) {
             if ($data_parcelas{$key} == '') {//caso exista a parcela e usuario mande alterar sem colocar a data, seta valor = 0 para dar erro
                 $valor_parcelas{$key} = '';
             }
-            if (($data_parcelas{$key} <= $today) && ($status_parcelas{$key} != 'Pago') && ($data_parcelas{$key} != '')) {
-                $this->session->set_flashdata('sem_parcelas', "Datas devem ser maior que a data de hoje!");
+            if (($data_parcelas{$key} <= $diasParaPagar) && ($status_parcelas{$key} != 'Pago') && ($data_parcelas{$key} != '')) {
+                $this->session->set_flashdata('sem_parcelas', "Pagamentos podem ser agendados para no mínimo 30 dias após a data de hoje!");
                 redirect('Ctrl_solicitacao/Classificacao_info/' . $solicitacao_id);
             }
         }//fim verificar se as datas são maiores que data do dia        
@@ -297,7 +297,7 @@ class Ctrl_solicitacao extends CI_Controller {
                 . "Projeto Número: $solic_basic_info->project_number\n"
                 . "Projeto Título: $solic_basic_info->project_title\n\n"
                 . "Mensagem:\n" . "<strong>" . $this->input->post('mensagem') . "</strong>");
-        $subject = "Projeto " . $solic_basic_info->project_number . " - Nova mensagem de " . $solic_basic_info->criado_por; //assunto da msg        
+        $subject = "Projeto " . $solic_basic_info->project_number . " - Nova mensagem de " . $this->session->userdata('nome'); //assunto da msg        
         $dados_msg['solicitacao_id'] = $solicitacao_id; //info para inserir no db
         $dados_msg['created_by'] = $this->session->userdata('id'); //info para inserir no db        
         $msg_id = $this->Model_solicitacao->New_message($dados_msg); //grava msg no banco

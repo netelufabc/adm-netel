@@ -255,5 +255,15 @@ class Model_solicitacao extends CI_Model {
     function Update_parcela($dados_parcela) {
         $this->db->update('pagamento_autonomo', $dados_parcela, "id = $dados_parcela->id");
     }
+    
+    /**
+     * Retorna dados da parcela de pagamento
+     * Query: select * from pagamento_autonomo where id = $parcela_id;
+     * @param int $parcela_id
+     * @return OBJECT objeto com retorno da query (uma linha)
+     */
+    function Get_parcela_data($parcela_id){
+        return $this->db->get_where('pagamento_autonomo', array('id' => $parcela_id))->row();
+    }
 
 }

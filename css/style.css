@@ -5,7 +5,7 @@ label{
 .roundedDivBorder{
     border: 1px solid #797979!important;
     border-radius: 16px;
-    width: 50%;
+    width: 100%;
     margin-bottom: 8px;
 }
 
@@ -13,7 +13,7 @@ label{
     padding: 3px;
     border: 1px solid #adff00;
     background: #e4feca;
-    width: 50%;
+    width: 100%;
     margin-bottom: 7px;
 }
 
@@ -21,7 +21,7 @@ label{
     padding: 3px;
     border: 1px solid #ffcd00;
     background: #f9ebb3;
-    width: 50%;
+    width: 100%;
     margin-bottom: 7px;
 }
 
@@ -49,7 +49,7 @@ class para caixa de upload de arquivos
     border-width: 0px;
     margin-bottom: 5px;
     padding: 5px;
-    width: 50%;
+    width: 100%;
 }
 
 .div_border:hover{
@@ -175,7 +175,7 @@ tr{
     -webkit-border-radius:3px;
     border-radius:3px;
     border:1px solid #999999;
-    width: 150px;
+    width: 200px;
     display:inline-block;
     cursor:pointer;
     color:#000000;

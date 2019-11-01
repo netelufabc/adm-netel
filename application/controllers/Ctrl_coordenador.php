@@ -10,6 +10,7 @@ class Ctrl_coordenador extends CI_Controller {
         AllowRoles(2, 3);
         $this->load->model('Model_coordenador');
         $this->load->model('Model_solicitacao');
+        $this->load->model('Model_administrativo');
     }
 
     public function Index() {
@@ -36,23 +37,22 @@ class Ctrl_coordenador extends CI_Controller {
      */
     function Pagamento_autonomo() {
         $coordenador_id = $this->session->userdata('id');
-        $listaProjetos = $this->Model_coordenador->Get_all_projects_from_coordenador($coordenador_id);
 
-        foreach ($listaProjetos as $projeto) {
-            //echo "Projeto: " . $projeto->title . br();
+        if (HasRole(3)) {//se for coordenador, mostra só seus projetos
+            $listaProjetos = $this->Model_coordenador->Get_all_projects_from_coordenador($coordenador_id);
+        } elseif (HasRole(1, 2)) {//se for sysadmin ou administrativo, mostra todos projetos
+            $listaProjetos = $this->Model_administrativo->Get_all_uab_projects();
+        }
+
+        foreach ($listaProjetos as $projeto) {//monta matriz de projetos->solicitacoes->contratados->parcelas
             $solics = $this->Model_coordenador->Get_autonomo_solic($projeto->id);
             $projeto->solics = $solics;
             foreach ($solics as $solic) {
-                //echo "--Solicitação: $solic->solicitacao_id" . br();
                 $candidatos = $this->Model_coordenador->Get_contratados($solic->solicitacao_id);
                 $solic->candidatos = $candidatos;
                 foreach ($candidatos as $candidato) {
-                    //echo "----Candidato Contratado: $candidato->id $candidato->nome" . br();
                     $parcelas = $this->Model_solicitacao->Get_parcelas($candidato->id);
                     $candidato->parcelas = $parcelas;
-                    //foreach ($parcelas as $parcela) {
-                    //echo "--------Parcela Info: $parcela->id_classificado $parcela->parcela_num $parcela->valor_pag $parcela->data_pag $parcela->status_pag" . br();
-                    //}
                 }
             }
         }
@@ -66,11 +66,21 @@ class Ctrl_coordenador extends CI_Controller {
         $this->load->view('View_main', $dados);
     }
 
+    /**
+     * Botão "autorizar pagamento" da view "view_content_autonomo".
+     */
     function Autoriza_autonomo() {
-        $parcela_id = $this->uri->segment(3);
-        $this->Model_coordenador->Set_parcela_status($parcela_id, 'Autorizado');
-        $this->session->set_flashdata('pag_alterado', "Pagamento autorizado!");
-        redirect('Ctrl_coordenador/Pagamento_autonomo/');
+        $parcela_id = $this->uri->segment(3);             
+        $today = date("Y-m-d");
+        $dados_parcela = $this->Model_solicitacao->Get_parcela_data($parcela_id);
+        if ($dados_parcela->data_pag <= $today) {//permitir autorização de pagamento smoente se a data atual é maior ou igual à data agendada   
+            $this->Model_coordenador->Set_parcela_status($parcela_id, 'Autorizado');
+            $this->session->set_flashdata('pag_alterado', "Pagamento autorizado!");
+            redirect('Ctrl_coordenador/Pagamento_autonomo/');
+        } else {
+            $this->session->set_flashdata('data_menor_agendada', "O pagamento só pode ser autorizados a partir da data agendada (" . mdate('%d/%m/%Y', mysql_to_unix($dados_parcela->data_pag)) . ")");
+            redirect('Ctrl_coordenador/Pagamento_autonomo/');
+        }
     }
 
 }
