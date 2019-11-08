@@ -22,7 +22,7 @@ class Ctrl_project extends CI_Controller {
         $coordenador = $this->Model_project->Get_project_coordenador($project_id);
         $lista_assistentes = $this->Model_project->Get_project_assitentes($project_id);
 
-        IsProjectOwnerOrAssist($this->session->userdata['id'], $coordenador, $lista_assistentes);//verificar se usuario é assistente ou coordenador do projeto
+        IsProjectOwnerOrAssist($this->session->userdata['id'], $coordenador, $lista_assistentes); //verificar se usuario é assistente ou coordenador do projeto
 
         $project_info = $this->Model_project->Get_project_info($project_id);
         $lista_tutores = $this->Model_project->Get_project_tutores($project_id);
@@ -49,15 +49,15 @@ class Ctrl_project extends CI_Controller {
 
         $coordenador = $this->Model_project->Get_project_coordenador($project_id);
         $lista_assistentes = $this->Model_project->Get_project_assitentes($project_id);
-        IsProjectOwnerOrAssist($this->session->userdata['id'], $coordenador, $lista_assistentes);//verificar se usuario é assistente ou coordenador do projeto
+        IsProjectOwnerOrAssist($this->session->userdata['id'], $coordenador, $lista_assistentes); //verificar se usuario é assistente ou coordenador do projeto
 
-        $lista_tutores0 = $this->Model_project->Get_project_tutores($project_id);
-        $lista_docentes0 = $this->Model_project->Get_project_docentes($project_id);
-        $lista_tutores = null; //usado para solicitacao de bolsa
-        $lista_docentes = null; //usado para solicitacao de bolsa
-        $role = $this->session->userdata['role'];
+//        $lista_tutores = $this->Model_project->Get_project_tutores($project_id);
+//        $lista_docentes0 = $this->Model_project->Get_project_docentes($project_id);
+//        $lista_tutores = null; //usado para solicitacao de bolsa
+//        $lista_docentes = null; //usado para solicitacao de bolsa
+//        $role = $this->session->userdata['role'];
 
-        if ($role == 3 || $role == 1 || $role == 2) { //mostra opções de nova solicitação para roles 1,2 e 3
+        if (HasRole(1, 2, 3)) { //mostra opções de nova solicitação para roles 1,2 e 3
             $new_solic_list = array('' => 'Selecione...',
                 'red' => 'Contratação de Pessoal',
                 'green' => 'Pagamento de Bolsa',
@@ -68,18 +68,44 @@ class Ctrl_project extends CI_Controller {
             $new_solic_list = array('' => 'Selecione...', 'blue' => 'Encontro Presencial');
         }
 
-        foreach ($lista_tutores0 as $value) {
-            $lista_tutores[$value->id] = $value->name;
-        }
+//        foreach ($lista_tutores0 as $value) {
+//            $lista_tutores[$value->id] = $value->name;
+//        }
+//
+//        foreach ($lista_docentes0 as $value) {
+//            $lista_docentes[$value->id] = $value->name;
+//        }
+//        $today = date('Y-m-d');
+//        $month_array = array();
 
-        foreach ($lista_docentes0 as $value) {
-            $lista_docentes[$value->id] = $value->name;
-        }
+//        foreach ($lista_tutores as $tutor) {
+//            $tutor->reports = $this->Model_project->Get_tutor_project_reports($tutor->id, $project_id);
+//            foreach ($tutor->reports as $report) {
+//                if (!in_array($report->month_year, $month_array)) {
+//                    $month_array[] = $report->month_year;
+//                }
+//            }
+//        }
+
+//        foreach ($month_array as $month) {
+//            foreach ($lista_tutores as $tutor) {
+//                foreach ($tutor->reports as $key => $report) {
+//                    if ($report->month_year != $month) {
+//                        unset($tutor->reports{$key});
+//                    }
+//                }
+//            }
+//        }
+
+
+
 
         $dados = array(
             'new_solic_list' => $new_solic_list, //lista para menu dropdown
-            'lista_tutores' => $lista_tutores,
-            'lista_docentes' => $lista_docentes,
+//            'lista_tutores' => $lista_tutores,
+//            'today' => $today,
+//            'month_array' => $month_array,
+            //'lista_docentes' => $lista_docentes0,
             'project_id' => $project_id,
             'view_menu' => 'View_menu.php',
             'view_content' => 'View_content_new_solicitacao',
@@ -115,33 +141,39 @@ class Ctrl_project extends CI_Controller {
         $this->form_validation->set_rules('mes_ano', 'MÊS/ANO', 'required');
 
         if ($this->form_validation->run() == TRUE) {
+            $project_id = $this->input->post('project_id');
             $dados_solic_bolsa = elements(array('mes_ano', 'tutor_ou_docente'), $this->input->post());
-            $dados_solic = array('project_id' => $this->input->post('project_id'),
-                'created_by' => $this->session->userdata['id'], 'tipo' => 'Bolsa',
-                'status' => 'Aberto');
-            $lista_tutores = $this->input->post('lista_tutores');
-            $lista_docentes = $this->input->post('lista_docentes');
-            $dados_solic_bolsa['mes_ano'] = $dados_solic_bolsa['mes_ano'] . "-01";
-            if ($dados_solic_bolsa['tutor_ou_docente'] == 'tutor') {
-                if ($lista_tutores != null) {
-                    $this->Model_solicitacao->New_solic_bolsa($dados_solic, $dados_solic_bolsa, $lista_tutores);
-                } else {
-                    $this->session->set_flashdata('erro_solic', 'Selecione ao menos um tutor!');
-                    redirect('Ctrl_project/New_solicitacao/' . $this->input->post('project_id'));
+//            $dados_solic = array('project_id' => $this->input->post('project_id'),
+//                'created_by' => $this->session->userdata['id'], 'tipo' => 'Bolsa',
+//                'status' => 'Aberto');
+
+            $dados_solic_bolsa['mes_ano'] = $dados_solic_bolsa['mes_ano'] . "-00";
+
+            if ($dados_solic_bolsa['tutor_ou_docente'] == '') {
+                $this->session->set_flashdata('erro_solic', 'Selecione se quem vai receber a bolsa é tutor ou docente!');
+                redirect('Ctrl_project/New_solicitacao/' . $this->input->post('project_id'));
+            }
+
+            $lista_tutores = $this->Model_project->Get_project_tutores($project_id);
+//          $lista_docentes = $this->Model_project->Get_project_docentes($project_id);
+            foreach ($lista_tutores as $tutor) {
+                $tutor->reports = $this->Model_project->Get_tutor_project_reports($tutor->id, $project_id);
+                foreach ($tutor->reports as $key => $report) {
+                    if (($report->month_year != $dados_solic_bolsa['mes_ano']) || ($report->status != 'pendente')) {
+                        unset($tutor->reports{$key});
+                    }
                 }
             }
-            if ($dados_solic_bolsa['tutor_ou_docente'] == 'docente') {
-                if ($lista_docentes != null) {
-                    $this->Model_solicitacao->New_solic_bolsa($dados_solic, $dados_solic_bolsa, $lista_docentes);
-                } else {
-                    $this->session->set_flashdata('erro_solic', 'Selecione ao menos um docente!');
-                    redirect('Ctrl_project/New_solicitacao/' . $this->input->post('project_id'));
-                }
-            }
-            $this->session->set_flashdata('erro_solic', 'Selecione se quem vai receber a bolsa é tutor ou docente!');
-            redirect('Ctrl_project/New_solicitacao/' . $this->input->post('project_id'));
-        } else {
-            redirect('Ctrl_project/Project_info/' . $this->input->post('project_id'));
+
+            $dados = array(
+                'month_year' => $dados_solic_bolsa['mes_ano'],
+                'lista_tutores' => $lista_tutores,
+                'project_id' => $project_id,
+                'view_menu' => 'View_menu.php',
+                'view_content' => 'View_content_pag_bolsa.php',
+                'menu_item' => criamenu($this->session->userdata('id'), $this->session->userdata('role')),
+            );
+            $this->load->view('View_main', $dados);
         }
     }
 

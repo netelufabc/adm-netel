@@ -4,7 +4,7 @@ echo " - " . $basic_info->project_title . "</strong>" . br(2);
 
 echo "Solicitação número: " . $basic_info->id . br();
 echo "Criado por: " . $basic_info->criado_por . br();
-echo "Aberto em: " . mdate('%d/%m/%Y - %H:%i:%s', mysql_to_unix($basic_info->created_at)) . br();
+echo "Aberto em: " . vdate($basic_info->created_at) . br();
 echo "Tipo: " . $basic_info->tipo . br();
 echo "<strong>Status: ";
 
@@ -14,7 +14,7 @@ if ($basic_info->status == "Aberto") {
 } else {
     echo "<p style=\"color: blue;\">";
     echo $basic_info->status . "</strong></p>";
-    echo "em " . mdate('%d/%m/%Y às %H:%i', mysql_to_unix($basic_info->closed_at)) . " por " . $basic_info->name . br(2);
+    echo "em " . vdate($basic_info->closed_at) . " por " . $basic_info->name . br(2);
 }
 
 echo "<strong>Tipo de vaga: " . $solic->tipo . "</strong>" . br();
@@ -27,7 +27,7 @@ echo "Requisitos Desejáveis: " . $solic->req_desej . br();
 echo "Dias para divulgação: " . $solic->dias_divulgacao . br();
 echo "Tipo de seleção: " . $solic->tipo_selecao . br();
 echo "Remuneração Bruta (R$): " . $solic->remuneracao_bruta . br();
-echo "Remuneração Mensal (R$): " . $solic->remuneracao_mensal . br();
+echo "Remuneração Mensal (R$): " . number_format($solic->remuneracao_mensal, 2) . br();
 echo "Local de trabalho: " . $solic->local_trabalho . br();
 echo "Horário de trabalho: " . $solic->horario_trabalho . br();
 echo "Situação: <strong>" . $solic->status . "</strong>" . br();
@@ -132,12 +132,12 @@ switch ($solic->status) {//parte relativa a classificacao dos candidatos
                         echo $candidato->situacao;
                         echo "</td>";
                         echo "<td>";
-                        $jsConfirm = 'return confirm(\'Esta ação vai apagar as '
+                        $jsConfirm = 'return confirm(\'Para contratação de autônomos, esta ação vai apagar as '
                                 . 'datas e valores inseridos pelo coordenador '
                                 . '(não vai alterar nada caso alguma parcela já'
                                 . ' foi paga). Tem certeza?\')';
-                        echo anchor("Ctrl_solicitacao/Set_contratado/$candidato->id/$basic_info->id", img(array('src' => "images/hired.png", 'title' => 'Marcar como contratado (possibilita o coordenador a inserir datas e valores de pagamento)', 'height' => '25', 'width' => '25'))) . " ";
-                        echo anchor("Ctrl_solicitacao/Set_classificado/$candidato->id/$basic_info->id", img(array('src' => "images/classified.png", 'title' => 'Marcar como classificado (remove a possibilidade do coordenador inserir datas e valores de pagamento)', 'height' => '25', 'width' => '25')), array('onclick' => $jsConfirm)) . " ";
+                        echo anchor("Ctrl_solicitacao/Set_contratado/$candidato->id/$basic_info->id", img(array('src' => "images/hired.png", 'title' => 'Marcar como contratado: possibilita o coordenador a inserir datas e valores de pagamento, no caso de autônomos; registra contratação para os outros tipos de contratados(CLT, Bolsista e Estagiário)', 'height' => '25', 'width' => '25'))) . " ";
+                        echo anchor("Ctrl_solicitacao/Set_classificado/$candidato->id/$basic_info->id", img(array('src' => "images/classified.png", 'title' => 'Marcar como classificado (remove a possibilidade do coordenador inserir datas e valores de pagamento, no caso de autônomos)', 'height' => '25', 'width' => '25')), array('onclick' => $jsConfirm)) . " ";
                         echo anchor("Ctrl_solicitacao/Set_fired/$candidato->id", img(array('src' => "images/fired.png", 'title' => 'Marcar como desligado (remove os pagamento pendentes (se houver)e marca como desligado)', 'height' => '25', 'width' => '25')));
                         echo "</td>";
                         echo "</tr>";
@@ -166,47 +166,49 @@ switch ($solic->status) {//parte relativa a classificacao dos candidatos
                         echo "<div class=\"classificado\">";
                     }
 
-                    echo "Posição $candidato->posicao: <strong>$candidato->nome</strong>; Exigências: $candidato->exigencias; Descrição: $candidato->descricao Situação: $candidato->situacao" . br(1);
-                    if ($candidato->situacao == 'Contratado') {
+                    echo "Posição $candidato->posicao: <strong>$candidato->nome</strong>; Exigências: $candidato->exigencias; Descrição: $candidato->descricao Situação: <strong>" . $candidato->situacao . "</strong>" . br(1);
+                    if ($solic->tipo == 'Autonomo') {
+                        if ($candidato->situacao == 'Contratado') {
 
-                        echo form_open('Ctrl_solicitacao/Set_pagamento/' . $basic_info->id . "/" . $candidato->id);
-                        for ($i = 0; $i <= 2; $i++) {// menor ou igual a 2 pois o máximo de parcelas é 3 (0,1,2)
-                            isset($candidato->parcelas{$i}->id) ? $id = $candidato->parcelas{$i}->id : $id = null;
-                            isset($candidato->parcelas{$i}->data_pag) ? $data = $candidato->parcelas{$i}->data_pag : $data = null;
-                            isset($candidato->parcelas{$i}->valor_pag) ? $valor = $candidato->parcelas{$i}->valor_pag : $valor = null;
-                            isset($candidato->parcelas{$i}->status_pag) ? $status = $candidato->parcelas{$i}->status_pag : $status = 'Não definido';
+                            echo form_open('Ctrl_solicitacao/Set_pagamento/' . $basic_info->id . "/" . $candidato->id);
+                            for ($i = 0; $i <= 2; $i++) {// menor ou igual a 2 pois o máximo de parcelas é 3 (0,1,2)
+                                isset($candidato->parcelas{$i}->id) ? $id = $candidato->parcelas{$i}->id : $id = null;
+                                isset($candidato->parcelas{$i}->data_pag) ? $data = $candidato->parcelas{$i}->data_pag : $data = null;
+                                isset($candidato->parcelas{$i}->valor_pag) ? $valor = $candidato->parcelas{$i}->valor_pag : $valor = null;
+                                isset($candidato->parcelas{$i}->status_pag) ? $status = $candidato->parcelas{$i}->status_pag : $status = 'Não definido';
 
-                            if ($status == 'Pago' || $status == 'Autorizado') {
-                                $readonly = 'readonly';
-                            } else {
-                                $readonly = '';
+                                if ($status == 'Pago' || $status == 'Autorizado') {
+                                    $readonly = 'readonly';
+                                } else {
+                                    $readonly = '';
+                                }
+
+                                echo form_hidden("parcela[]", $id);
+                                echo form_hidden("status[]", $status);
+                                echo form_hidden("remuneracao_bruta", $solic->remuneracao_bruta);
+                                echo br() . "Parcela " . ($i + 1) . ": Data: ";
+                                ?>
+                                <input type="date" name="parceladata[]" value=<?php echo $data ?> class="inputparcelas" <?php echo $readonly ?>>
+                                <?php
+                                echo "Valor (R$): ";
+                                ?>
+                                <input type="number" name="parcelavalor[]" value=<?php echo $valor ?> class="inputparcelas" min="0" step="0.01" <?php echo $readonly ?>>                        
+                                <?php
+                                echo "Situação: ";
+                                if ($status == 'Pago') {
+                                    $color = 'blue';
+                                } elseif ($status == 'Aguardando autorização') {
+                                    $color = 'orange';
+                                } elseif ($status == 'Autorizado') {
+                                    $color = 'green';
+                                } else {
+                                    $color = 'black';
+                                }
+                                echo "<span style=\"color:$color\">" . $status . "</span>";
                             }
-
-                            echo form_hidden("parcela[]", $id);
-                            echo form_hidden("status[]", $status);
-                            echo form_hidden("remuneracao_bruta", $solic->remuneracao_bruta);
-                            echo br() . "Parcela " . ($i + 1) . ": Data: ";
-                            ?>
-                            <input type="date" name="parceladata[]" value=<?php echo $data ?> class="inputparcelas" <?php echo $readonly ?>>
-                            <?php
-                            echo "Valor (R$): ";
-                            ?>
-                            <input type="number" name="parcelavalor[]" value=<?php echo $valor ?> class="inputparcelas" min="0" step="0.01" <?php echo $readonly ?>>                        
-                            <?php
-                            echo "Situação: ";
-                            if ($status == 'Pago') {
-                                $color = 'blue';
-                            } elseif ($status == 'Aguardando autorização') {
-                                $color = 'orange';
-                            } elseif ($status == 'Autorizado') {
-                                $color = 'green';
-                            } else {
-                                $color = 'black';
-                            }
-                            echo "<span style=\"color:$color\">" . $status . "</span>";
+                            echo br(2) . form_submit(array('name' => 'fechar_solic', 'class' => 'myButton'), 'Definir parcelas');
+                            echo form_close();
                         }
-                        echo br(2) . form_submit(array('name' => 'fechar_solic', 'class' => 'myButton'), 'Definir parcelas');
-                        echo form_close();
                     }
 
                     echo "</div>";

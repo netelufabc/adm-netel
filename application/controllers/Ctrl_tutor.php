@@ -34,13 +34,11 @@ class Ctrl_tutor extends CI_Controller {
         $project_id = $this->uri->segment(3);
         $tutor_id = $this->session->userdata('id');
         $project_info = $this->Model_project->Get_project_info($project_id);
-        //$project_create_time = date('Y-m-01', strtotime($project_info->create_time));
+
         $today = date('d', strtotime('today'));
         $last_month = date('Y-m', strtotime('last month'));
-        //$this_month = date('Y-m-01', strtotime('this month'));
-        //$tutor_reports = $this->Model_tutor->Get_reports($tutor_id, $project_id);
-        $tutor_added_at_raw = $this->Model_tutor->Get_tutor_role_date($tutor_id, $project_id)->role_create_time;
-        $tutor_added_at = date('Y-m', strtotime($tutor_added_at_raw));
+        $tutor_added_at_raw = $this->Model_tutor->Get_tutor_role_date($tutor_id, $project_id)->role_create_time; //data que vai contar para aceitar relatórios
+        $tutor_added_at = date('Y-m', strtotime($tutor_added_at_raw)); //data que vai contar para aceitar relatórios
 
         $meses_nao_enviados = null;
         $meses_rejeitados_permanente = null;
@@ -82,6 +80,49 @@ class Ctrl_tutor extends CI_Controller {
             'menu_item' => criamenu($this->session->userdata('id'), $this->session->userdata('role')),
         );
         $this->load->view('View_main', $dados);
+    }
+
+    function Upload_reports() {//botao enviar de view_content_list_tutor_reports
+        $project_id = $this->uri->segment(3);
+
+        $all_empty = true;//variavel para verificar se todos campos de arquivos estão vazios
+
+        if (count($_FILES) > 0) {     //verifica se tem algum elemento no array de files    
+            if (!is_dir('uploads/' . $this->session->userdata['login'])) {//verifica e cria diretorio de upload do user
+                mkdir('uploads/' . $this->session->userdata['login']);
+            }
+
+            foreach ($_FILES as $post_filename => $file) {
+
+                if ($file['name'] != '') {
+
+                    $all_empty = false;
+
+                    $file_info = Array();
+                    $file_info['file_hash'] = generateRandomString();
+                    $file_info['file_name'] = $file['name'];
+                    move_uploaded_file($file['tmp_name'], 'uploads/' . $this->session->userdata['login'] . '/' . $file_info['file_hash']);
+
+                    $report_data = array();
+                    $report_data['file_id'] = $this->Model_tutor->Set_report_file_info($file_info); //coloca na tabela info do arquivo e retorna o id
+
+                    $report_data['tutor_id'] = $this->session->userdata['id'];
+                    $report_data['project_id'] = $this->uri->segment(3);
+                    $report_data['month_year'] = substr($post_filename, 4) . "-00";
+                    $report_data['status'] = 'pendente';
+
+                    $this->Model_tutor->Set_report($report_data); //coloca na tabela de report do tutor
+
+                    $this->session->set_flashdata('report_ok', 'Relatórios atualizados!');
+                    redirect("Ctrl_tutor/Project_reports/" . $report_data['project_id']);
+                }
+            }
+        }
+
+        if ($all_empty) {//se todos inputs de arquivo estão vazios...
+            $this->session->set_flashdata('report_null', 'Nenhum arquivo selecionado!');
+            redirect("Ctrl_tutor/Project_reports/" . $project_id);
+        }
     }
 
 }

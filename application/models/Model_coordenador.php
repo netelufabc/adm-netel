@@ -52,4 +52,29 @@ class Model_coordenador extends CI_Model {
         $this->db->update('pagamento_autonomo', array('status_pag' => $status_pag), "id = $parcela_id");
     }
 
+    /**
+     * Pega todos relatórioa do tutor para o projeto
+     * QUERY: select tutor_report.*, user.login, user.name as accepted_or_denied_by, 
+     * uab_project.title, files.file_name, files.file_hash, files.file_name
+     * from tutor_report
+     * left join user on tutor_report.accept_or_deny_by = user.id
+     * left join files on tutor_report.file_id = files.id
+     * join uab_project on uab_project.id = tutor_report.project_id
+     * where tutor_report.tutor_id = $tutor_id
+     * and tutor_report.project_id = $project_id;
+     * @param int $tutor_id
+     * @param int $project_id
+     * @param string $month_year yyyy-mm
+     * @return DB_OBJECT Linha da tabela tutor_report relativa ao relatório do mês
+     */
+//    function Get_tutor_project_reports($tutor_id, $project_id) {
+//        $this->db->select('tutor_report.*, user.login, user.name as accepted_or_denied_by, uab_project.title, files.file_name, files.file_hash, files.file_name')
+//                ->from('tutor_report')
+//                ->join('user', 'tutor_report.accept_or_deny_by = user.id', 'left')
+//                ->join('files', 'tutor_report.file_id = files.id', 'left')
+//                ->join('uab_project', 'uab_project.id = tutor_report.project_id')
+//                ->where("tutor_report.tutor_id = $tutor_id")
+//                ->where("tutor_report.project_id = $project_id");                
+//        return $this->db->get()->result();
+//    }
 }

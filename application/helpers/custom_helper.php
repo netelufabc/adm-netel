@@ -10,6 +10,27 @@ function IsLogged() {
 }
 
 /**
+ * Formata a data quem vem do BD padrão SQL para padrão BR (dd/mm/yyyy : hh:mm:ss),
+ * sendo que parametro tipo indica quais informações quer retornar.
+ * @param sql_datetime $data
+ * @param string $tipo Considera: 'full' (padrão caso omisso) para dd/mm/yyyy : hh:mm:ss;
+ * 'dmy' para dd/mm/yyyy; 'my' para mm/yyyy
+ * @return string Data formatada
+ */
+function vdate($data, $tipo = 'full') {
+    switch ($tipo) {
+        case 'full':
+            return mdate('%d/%m/%Y - %H:%i:%s', mysql_to_unix($data));
+        case 'dmy':
+            return mdate('%d/%m/%Y', mysql_to_unix($data));
+        case 'my':
+            return mdate('%m/%Y', mysql_to_unix($data));
+        default:
+            return $data;
+    }
+}
+
+/**
  * Verifica se o usuário atual é coordenador ou assistente do projeto.
  * Caso não seja um dos dois, redireciona para Ctrl_main.
  * Admins e administrativos sempre tem acesso.

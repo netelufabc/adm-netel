@@ -162,6 +162,9 @@ class Ctrl_administrativo extends CI_Controller {
         redirect('Ctrl_coordenador/Pagamento_autonomo/');
     }
 
+    /**
+     * Botão "marcar como aguardando autorizacao" da view "view_content_autonomo".
+     */
     function Set_parcela_aguardando_autoriza(){
         $parcela_id = $this->uri->segment(3);
         $this->Model_coordenador->Set_parcela_status($parcela_id, 'Aguardando autorização');

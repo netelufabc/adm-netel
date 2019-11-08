@@ -11,6 +11,7 @@ class Ctrl_coordenador extends CI_Controller {
         $this->load->model('Model_coordenador');
         $this->load->model('Model_solicitacao');
         $this->load->model('Model_administrativo');
+        $this->load->model('Model_project');
     }
 
     public function Index() {
@@ -70,7 +71,7 @@ class Ctrl_coordenador extends CI_Controller {
      * Botão "autorizar pagamento" da view "view_content_autonomo".
      */
     function Autoriza_autonomo() {
-        $parcela_id = $this->uri->segment(3);             
+        $parcela_id = $this->uri->segment(3);
         $today = date("Y-m-d");
         $dados_parcela = $this->Model_solicitacao->Get_parcela_data($parcela_id);
         if ($dados_parcela->data_pag <= $today) {//permitir autorização de pagamento smoente se a data atual é maior ou igual à data agendada   

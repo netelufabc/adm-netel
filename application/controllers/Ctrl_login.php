@@ -14,15 +14,17 @@ class Ctrl_login extends CI_Controller {
         $user_data = $this->Model_login->Get_user_and_role($dados_login['login']);
         $user_id = $user_data{0}->id;
 
-        if ($this->Ldap_login($dados_login, $user_id)) {
+        $ldap_info = $this->Ldap_login($dados_login, $user_id);//email e nome do ldap
+        if ($ldap_info) {
             if (count($user_data) == 1) {
                 $role = $user_data{0}->role_id;
                 $sessioninfo = array('id' => $user_data{0}->id, 'login' => $user_data{0}->login,
-                    'nome' => $user_data{0}->name, 'email' => $user_data{0}->email, 'role' => $role);
+                    'nome' => $ldap_info['displayname'], 'email' => $ldap_info['mail'], 'role' => $role);
                 $this->session->set_userdata($sessioninfo);
                 redirect('Ctrl_main');
             } else {
                 $dados = array(
+                    'ldap_info' => $ldap_info,//email e nome do ldap
                     'user_data' => $user_data,
                     'view_content' => 'View_content_select_role.php',
                 );
@@ -64,7 +66,7 @@ class Ctrl_login extends CI_Controller {
                 $this->Model_login->Update_user_info_from_ldap($dados_user);
 
                 ldap_close($ldapcon);
-                return true;
+                return array('mail' => $mail, 'displayname' => $displayname);
             } else {
                 $err_message = ldap_error($ldapcon);
                 $this->session->set_flashdata('invalid_credentials', "Não foi possível efetuar o Login: $err_message");

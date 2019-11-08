@@ -84,6 +84,7 @@ class Ctrl_solicitacao extends CI_Controller {
      * Página inicial view_content_classificacao
      */
     function Classificacao_info() {
+        AllowRoles(2, 3);
 
         $solicitacao_id = $this->uri->segment(3);
         $basic_info = $this->Model_solicitacao->Get_solicitacao_basic_info($solicitacao_id);
@@ -131,6 +132,8 @@ class Ctrl_solicitacao extends CI_Controller {
      * Mexa por sua conta e risco.
      */
     function Set_pagamento() {
+        AllowRoles(2, 3);
+
         $solicitacao_id = $this->uri->segment(3);
         $classificado_id = $this->uri->segment(4);
 
