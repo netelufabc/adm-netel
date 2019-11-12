@@ -25,6 +25,11 @@ function vdate($data, $tipo = 'full') {
             return mdate('%d/%m/%Y', mysql_to_unix($data));
         case 'my':
             return mdate('%m/%Y', mysql_to_unix($data));
+        case 'myext':
+            return mdate('%F de %Y', mysql_to_unix($data));
+        case 'fullext':
+            return mdate('$d de %F de %Y', mysql_to_unix($data));
+
         default:
             return $data;
     }

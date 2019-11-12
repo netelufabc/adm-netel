@@ -1,3 +1,8 @@
+/*Classe para mostrar ou esconder div, utilizado com JS na pagina view_content_pag_bolsa.php*/
+.none {
+    display:none;
+}
+
 label{
     margin-right: 5px;
 }

@@ -51,12 +51,6 @@ class Ctrl_project extends CI_Controller {
         $lista_assistentes = $this->Model_project->Get_project_assitentes($project_id);
         IsProjectOwnerOrAssist($this->session->userdata['id'], $coordenador, $lista_assistentes); //verificar se usuario é assistente ou coordenador do projeto
 
-//        $lista_tutores = $this->Model_project->Get_project_tutores($project_id);
-//        $lista_docentes0 = $this->Model_project->Get_project_docentes($project_id);
-//        $lista_tutores = null; //usado para solicitacao de bolsa
-//        $lista_docentes = null; //usado para solicitacao de bolsa
-//        $role = $this->session->userdata['role'];
-
         if (HasRole(1, 2, 3)) { //mostra opções de nova solicitação para roles 1,2 e 3
             $new_solic_list = array('' => 'Selecione...',
                 'red' => 'Contratação de Pessoal',
@@ -68,44 +62,8 @@ class Ctrl_project extends CI_Controller {
             $new_solic_list = array('' => 'Selecione...', 'blue' => 'Encontro Presencial');
         }
 
-//        foreach ($lista_tutores0 as $value) {
-//            $lista_tutores[$value->id] = $value->name;
-//        }
-//
-//        foreach ($lista_docentes0 as $value) {
-//            $lista_docentes[$value->id] = $value->name;
-//        }
-//        $today = date('Y-m-d');
-//        $month_array = array();
-
-//        foreach ($lista_tutores as $tutor) {
-//            $tutor->reports = $this->Model_project->Get_tutor_project_reports($tutor->id, $project_id);
-//            foreach ($tutor->reports as $report) {
-//                if (!in_array($report->month_year, $month_array)) {
-//                    $month_array[] = $report->month_year;
-//                }
-//            }
-//        }
-
-//        foreach ($month_array as $month) {
-//            foreach ($lista_tutores as $tutor) {
-//                foreach ($tutor->reports as $key => $report) {
-//                    if ($report->month_year != $month) {
-//                        unset($tutor->reports{$key});
-//                    }
-//                }
-//            }
-//        }
-
-
-
-
         $dados = array(
             'new_solic_list' => $new_solic_list, //lista para menu dropdown
-//            'lista_tutores' => $lista_tutores,
-//            'today' => $today,
-//            'month_array' => $month_array,
-            //'lista_docentes' => $lista_docentes0,
             'project_id' => $project_id,
             'view_menu' => 'View_menu.php',
             'view_content' => 'View_content_new_solicitacao',
@@ -143,9 +101,6 @@ class Ctrl_project extends CI_Controller {
         if ($this->form_validation->run() == TRUE) {
             $project_id = $this->input->post('project_id');
             $dados_solic_bolsa = elements(array('mes_ano', 'tutor_ou_docente'), $this->input->post());
-//            $dados_solic = array('project_id' => $this->input->post('project_id'),
-//                'created_by' => $this->session->userdata['id'], 'tipo' => 'Bolsa',
-//                'status' => 'Aberto');
 
             $dados_solic_bolsa['mes_ano'] = $dados_solic_bolsa['mes_ano'] . "-00";
 
@@ -170,11 +125,113 @@ class Ctrl_project extends CI_Controller {
                 'lista_tutores' => $lista_tutores,
                 'project_id' => $project_id,
                 'view_menu' => 'View_menu.php',
-                'view_content' => 'View_content_pag_bolsa.php',
+                'view_content' => 'View_content_pag_bolsa_1.php',
                 'menu_item' => criamenu($this->session->userdata('id'), $this->session->userdata('role')),
             );
             $this->load->view('View_main', $dados);
         }
+    }
+
+    /**
+     * botão prosseguir da página View_content_pag_bolsa_1.php
+     */
+    function Confirma_tutores() {
+        $project_id = $this->uri->segment(3);
+
+        if ($this->input->post('report_id') != null) {//verifica se existe ao menos um tutor com relatório cadastrado
+            $report_id = $this->input->post('report_id');
+        } else {
+            redirect('Ctrl_project/New_solicitacao/' . $project_id);
+        }
+
+        //verificar se ao menos um dos relatórios foi selecionado como aprovado ou rejeitado
+        $radio_set = false;
+        foreach ($report_id as $id) {
+            if ($this->input->post('aprovar' . $id)) {
+                $radio_set = true;
+                break;
+            }
+        }
+
+        if (!$radio_set) {
+            $this->session->set_flashdata('erro_solic', 'Selecione ao menos um relatório aprovado ou rejeitado!');
+            redirect('Ctrl_project/New_solicitacao/' . $project_id);
+        }
+        //fim verificar se ao menos um dos relatórios foi selecionado como aprovado ou rejeitado
+        //monta array de relatórios
+        $reports = array();
+        foreach ($report_id as $id) {
+            $report = new stdClass();
+            if ($this->input->post('aprovar' . $id)) {
+                $report->id = $id;
+                $report->tutor = $this->Model_project->Get_tutor_by_report($id)->name;
+                $report->situacao = $this->input->post('aprovar' . $id);
+                if ($this->input->post('aprovar' . $id) == 'reprovado') {//verifica se o relatório foi reprovado
+                    if ($this->input->post('motivo' . $id) == null) {//verifica se foi escolhido um motivo caso relatório foi rejeitado
+                        $this->session->set_flashdata('erro_solic', 'Você deve escolher um motivo para um relatório rejeitado!');
+                        redirect('Ctrl_project/New_solicitacao/' . $project_id);
+                    } else {
+                        $report->motivo = $report->motivo = $this->input->post('motivo' . $id);
+                    }
+                } else {
+                    $report->motivo = null;
+                }
+                array_push($reports, $report);
+            }
+        }
+        //fim monta array de relatórios
+
+        $aprovados = array();
+        $reprovados = array();
+        foreach ($reports as $report) {
+            if ($report->situacao == 'aprovado') {
+                array_push($aprovados, $report->tutor);
+            } else {
+                array_push($reprovados, $report->tutor . " - Motivo: " . $report->motivo);
+            }
+        }
+
+        $dados_relatorio = new stdClass();
+        $dados_relatorio->project_id = $this->Model_project->Get_project_info($project_id)->id;
+        $dados_relatorio->numero_projeto = $this->Model_project->Get_project_info($project_id)->project_number;
+        $dados_relatorio->nome_projeto = $this->Model_project->Get_project_info($project_id)->title;
+        $dados_relatorio->coordenador = $this->Model_project->Get_project_coordenador($project_id)->coord_name;
+        $dados_relatorio->month_year = substr($this->input->post('month_year'), 0, -2) . "01";
+        $dados_relatorio->today = date('Y-m-d');
+
+        $text_temp = "Na condição de Coordenador do projeto número <strong>$dados_relatorio->numero_projeto - $dados_relatorio->nome_projeto</strong>, oferecido em parceria com a UFABC/CAPES, "
+                . "atesto e ratifico o trabalho realizado pelos tutores relacionados abaixo durante o mês de <strong>" . vdate($dados_relatorio->month_year, 'myext') . "</strong>.\nOs detalhes do trabalho "
+                . "realizado por cada tutor estão apresentados no relatório mensal individual de tutoria, que foi encaminhado pelos seguintes a esta coordenação:";
+
+        $aprovado_string = '';
+        if (count($aprovados) > 0) {
+            $aprovado_string = "\n\n<strong>Pagamentos de bolsas aprovados:</strong>\n";
+            foreach ($aprovados as $aprovado) {
+                $aprovado_string = $aprovado_string . "\n" . $aprovado;
+            }
+        }
+
+        $reprovado_string = '';
+        if (count($reprovados) > 0) {
+            $reprovado_string = "\n\n<strong>Pagamentos de bolsas reprovados:</strong>\n";
+            foreach ($reprovados as $reprovado) {
+                $reprovado_string = $reprovado_string . "\n" . $reprovado;
+            }
+        }
+
+        $footer = "\n\n\n<strong>Santo André, " . vdate($dados_relatorio->today, 'dmy') . "</strong>" .
+                "\n\n\n_________________________________________\n<strong>" . $dados_relatorio->coordenador . "\nCoordenador de Projeto UAB/UFABC</strong>";
+
+        $text = $text_temp . $aprovado_string . $reprovado_string . $footer; //string final para o PDF
+
+        $dados = array(
+            'text' => $text,
+            'dados_relatorio' => $dados_relatorio,
+            'view_menu' => 'View_menu.php',
+            'view_content' => 'View_content_pag_bolsa_2.php',
+            'menu_item' => criamenu($this->session->userdata('id'), $this->session->userdata('role')),
+        );
+        $this->load->view('View_main', $dados);
     }
 
     function New_solic_servico() {

@@ -8,7 +8,7 @@ class Model_project extends CI_Model {
         return($this->db->get_where('uab_project', array('id' => $project_id))->row());
     }
 
-    public function Get_project_coordenador($project_id) {       
+    public function Get_project_coordenador($project_id) {
         $this->db->select('uab_project.project_number, uab_project.id as project_id, uab_project.title,
                 user.login as coordenador , user.name as coord_name, user.id as user_id ');
         $this->db->from('uab_project');
@@ -34,7 +34,7 @@ class Model_project extends CI_Model {
         $this->db->where('user_role.project_id', $project_id);
         return($this->db->get()->result());
     }
-    
+
     public function Get_project_docentes($project_id) {
         $this->db->select('user.id, user.login, user.name, user.email, user_role.create_time, user_role.created_by');
         $this->db->from('user_role');
@@ -64,7 +64,7 @@ class Model_project extends CI_Model {
             redirect("Ctrl_administrativo/Edit_project/$project_id");
         }
     }
-    
+
     public function Insert_docente($project_id, $user_id) {
         $query = $this->db->get_where('user_role', array('role_id' => '6', 'project_id' => $project_id, 'user_id' => $user_id));
         if ($query->num_rows() == 0 && $user_id != 0) {
@@ -75,7 +75,7 @@ class Model_project extends CI_Model {
             redirect("Ctrl_administrativo/Edit_project/$project_id");
         }
     }
-    
+
     /**
      * Pega todos relatórioa do tutor para o projeto
      * QUERY: select tutor_report.*, user.login, user.name as accepted_or_denied_by, 
@@ -98,8 +98,24 @@ class Model_project extends CI_Model {
                 ->join('files', 'tutor_report.file_id = files.id', 'left')
                 ->join('uab_project', 'uab_project.id = tutor_report.project_id')
                 ->where("tutor_report.tutor_id = $tutor_id")
-                ->where("tutor_report.project_id = $project_id");                
+                ->where("tutor_report.project_id = $project_id");
         return $this->db->get()->result();
+    }
+
+    /**
+     * Query: select user.name 
+     * from tutor_report
+     * join user on tutor_report.tutor_id = user.id
+     * where tutor_report.id = $report_id;
+     * @param int $report_id
+     * @return OBJECT_DB
+     */
+    function Get_tutor_by_report($report_id) {
+        $this->db->select('user.*')
+                ->from('tutor_report')
+                ->join('user', 'tutor_report.tutor_id = user.id')
+                ->where("tutor_report.id = $report_id");
+        return $this->db->get()->row();
     }
 
 }
