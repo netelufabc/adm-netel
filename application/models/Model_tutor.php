@@ -52,11 +52,14 @@ class Model_tutor extends CI_Model {
     /**
      * Insere os dados do arquivo na tabela files e retorna o ID inserido
      * @param ASSOCIATIVE_ARRAY $file_info Array associativo com os dados da tabela files
-     * @return int ID da linha inserida
+     * @return int ID da linha inserida ou null se falhar
      */
     function Set_report_file_info($file_info) {
-        $this->db->insert('files', $file_info);
-        return $this->db->insert_id();
+        if ($this->db->insert('files', $file_info)) {
+            return $this->db->insert_id();
+        } else {
+            return null;
+        }
     }
 
     /**

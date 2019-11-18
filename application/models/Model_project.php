@@ -118,4 +118,16 @@ class Model_project extends CI_Model {
         return $this->db->get()->row();
     }
 
+    /**
+     * Atualiza info do relatório do tutor, tutor_report table
+     * QUERY: "UPDATE `tutor_report` SET `id` = $dados_report['id'], `status` = $dados_report['status'],
+     * `deny_reason` = $dados_report['deny_reason'], `accept_or_deny_by` = $dados_report['accept_or_deny_by'],
+     * `accept_or_deny_at` = $dados_report['accept_or_deny_at'], `solic_bolsa_id` = $dados_report['solic_bolsa_id']
+     * WHERE `id` = $dados_report['id']"
+     * @param array_associative $dados_report
+     */
+    function Update_report_info($dados_report) {
+        $this->db->update('tutor_report', $dados_report, "id = $dados_report[id]");
+    }
+
 }

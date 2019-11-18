@@ -71,6 +71,9 @@ switch ($basic_info->tipo) {//mostra os dados de acordo com o tpo de solicitaç�
 
         echo "Mês / Ano de referência: " . vdate($solic->mes_ano, 'my') . br();
         echo "Bolsa para: " . $solic->tutor_ou_docente . br();
+        echo "Relatório: ";
+        echo anchor('uploads/' . $this->session->userdata['login'] . "/" .
+                $relatorio_bolsa->file_hash, $relatorio_bolsa->file_name, "download=$relatorio_bolsa->file_name") . br(2);
         echo "A receber pagamento de bolsa:" . br(2);
         foreach ($bolsistas as $bolsista) {
             echo $bolsista->name . br();

@@ -3,9 +3,10 @@ echo "<h3>Pagamento de Bolsas</h3>Selecione os bolsistas do mês selecionado (" 
 
 if (count($lista_tutores) > 0) {//verifica se existem tutores cadastrados no projeto
     echo form_open('Ctrl_project/Confirma_tutores/' . $project_id);
-    
+
     echo form_hidden('project_id', $project_id);
     echo form_hidden('month_year', $month_year);
+    echo form_hidden('tutor_ou_docente', $tutor_ou_docente);
 
     foreach ($lista_tutores as $tutor) {
         echo "<h4>Tutor: $tutor->name</h4>";
@@ -26,7 +27,7 @@ if (count($lista_tutores) > 0) {//verifica se existem tutores cadastrados no pro
 
                 <?php
                 foreach ($tutor->reports as $report) {
-                    
+
                     echo form_hidden('report_id[]', $report->id);
                     echo "<tr>";
                     echo "<td>";
@@ -45,7 +46,7 @@ if (count($lista_tutores) > 0) {//verifica se existem tutores cadastrados no pro
                     echo "<td>";
                     echo "Aprovar " . form_radio(array('name' => "aprovar$report->id", 'value' => 'aprovado', 'onclick' => "show1($report->id)")) .
                     "Reprovar " . form_radio(array('name' => "aprovar$report->id", 'value' => 'reprovado', 'onclick' => "show2($report->id)")) .
-                    "<div id=\"div$report->id\" class=\"none\">" . form_dropdown("motivo$report->id", array('' => 'Escolha o motivo...', '0' => 'Relatório incorreto')) . "</div>";
+                    "<div id=\"div$report->id\" class=\"none\">" . form_dropdown("motivo$report->id", array('' => 'Escolha o motivo...', 'errado' => 'Relatório incorreto', 'permanente' => 'Negado Permanente')) . "</div>";
                     echo "</td>";
                     echo "</tr>";
                 }

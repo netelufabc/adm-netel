@@ -10,6 +10,7 @@ class Ctrl_project extends CI_Controller {
         AllowRoles(2, 3, 4);
         $this->load->model('Model_project');
         $this->load->model('Model_solicitacao');
+        $this->load->model('Model_tutor');
     }
 
     public function Index() {
@@ -121,6 +122,7 @@ class Ctrl_project extends CI_Controller {
             }
 
             $dados = array(
+                'tutor_ou_docente' => $dados_solic_bolsa['tutor_ou_docente'],
                 'month_year' => $dados_solic_bolsa['mes_ano'],
                 'lista_tutores' => $lista_tutores,
                 'project_id' => $project_id,
@@ -144,7 +146,7 @@ class Ctrl_project extends CI_Controller {
             redirect('Ctrl_project/New_solicitacao/' . $project_id);
         }
 
-        //verificar se ao menos um dos relatórios foi selecionado como aprovado ou rejeitado
+//verificar se ao menos um dos relatórios foi selecionado como aprovado ou rejeitado
         $radio_set = false;
         foreach ($report_id as $id) {
             if ($this->input->post('aprovar' . $id)) {
@@ -157,14 +159,15 @@ class Ctrl_project extends CI_Controller {
             $this->session->set_flashdata('erro_solic', 'Selecione ao menos um relatório aprovado ou rejeitado!');
             redirect('Ctrl_project/New_solicitacao/' . $project_id);
         }
-        //fim verificar se ao menos um dos relatórios foi selecionado como aprovado ou rejeitado
-        //monta array de relatórios
+//fim verificar se ao menos um dos relatórios foi selecionado como aprovado ou rejeitado
+//monta array de relatórios
         $reports = array();
         foreach ($report_id as $id) {
             $report = new stdClass();
             if ($this->input->post('aprovar' . $id)) {
                 $report->id = $id;
                 $report->tutor = $this->Model_project->Get_tutor_by_report($id)->name;
+                $report->tutor_id = $this->Model_project->Get_tutor_by_report($id)->id;
                 $report->situacao = $this->input->post('aprovar' . $id);
                 if ($this->input->post('aprovar' . $id) == 'reprovado') {//verifica se o relatório foi reprovado
                     if ($this->input->post('motivo' . $id) == null) {//verifica se foi escolhido um motivo caso relatório foi rejeitado
@@ -179,8 +182,8 @@ class Ctrl_project extends CI_Controller {
                 array_push($reports, $report);
             }
         }
-        //fim monta array de relatórios
-
+//fim monta array de relatórios
+        //monta texto do relatório
         $aprovados = array();
         $reprovados = array();
         foreach ($reports as $report) {
@@ -198,6 +201,7 @@ class Ctrl_project extends CI_Controller {
         $dados_relatorio->coordenador = $this->Model_project->Get_project_coordenador($project_id)->coord_name;
         $dados_relatorio->month_year = substr($this->input->post('month_year'), 0, -2) . "01";
         $dados_relatorio->today = date('Y-m-d');
+        $dados_relatorio->tutor_ou_docente = $this->input->post('tutor_ou_docente');
 
         $text_temp = "Na condição de Coordenador do projeto número <strong>$dados_relatorio->numero_projeto - $dados_relatorio->nome_projeto</strong>, oferecido em parceria com a UFABC/CAPES, "
                 . "atesto e ratifico o trabalho realizado pelos tutores relacionados abaixo durante o mês de <strong>" . vdate($dados_relatorio->month_year, 'myext') . "</strong>.\nOs detalhes do trabalho "
@@ -223,8 +227,10 @@ class Ctrl_project extends CI_Controller {
                 "\n\n\n_________________________________________\n<strong>" . $dados_relatorio->coordenador . "\nCoordenador de Projeto UAB/UFABC</strong>";
 
         $text = $text_temp . $aprovado_string . $reprovado_string . $footer; //string final para o PDF
+//fim monta texto do relatório
 
         $dados = array(
+            'reports' => $reports, //envia dados para pegar ids dos bolsistas
             'text' => $text,
             'dados_relatorio' => $dados_relatorio,
             'view_menu' => 'View_menu.php',
@@ -232,6 +238,61 @@ class Ctrl_project extends CI_Controller {
             'menu_item' => criamenu($this->session->userdata('id'), $this->session->userdata('role')),
         );
         $this->load->view('View_main', $dados);
+    }
+
+    /**
+     * Botão Criar Solicitação de Bolsa da página view_content_pag_bolsa2.php
+     */
+    function Create_solic_bolsa() {
+
+        if (count($_FILES) == 1) {//bloco para verificar se veio algum arquivo no POST
+            foreach ($_FILES as $file) {
+                if ($file['name'] == '') {
+                    redirect('Ctrl_main');
+                }
+            }
+        } else {
+            redirect('Ctrl_main');
+        }//fim bloco para verificar se veio algum arquivo no POST
+
+        if (!is_dir('uploads/' . $this->session->userdata['login'])) {//verifica e cria diretorio de upload do user
+            mkdir('uploads/' . $this->session->userdata['login']);
+        }
+
+        $lista_bolsistas = $this->input->post('tutor_id'); //ids dos bolsistas aprovados - aqui verificar se ao menos um tutor foi aprovado ou totds reprovados, senao esta lista vai null e dá pau no model
+
+        foreach ($_FILES as $file) {
+            $file_info = Array();
+            $file_info['file_hash'] = generateRandomString();
+            $file_info['file_name'] = $file['name'];
+            move_uploaded_file($file['tmp_name'], 'uploads/' . $this->session->userdata['login'] . '/' . $file_info['file_hash']);
+
+            $coord_report_id = $this->Model_tutor->Set_report_file_info($file_info); //insere na tabela de files
+        }
+
+        $dados_solic_bolsa = array('coord_report_id' => $coord_report_id, //esta variavel coord_report_id deve ser o ID do relatório que o coordenador fez upload
+            'tutor_ou_docente' => $this->input->post('tutor_ou_docente'),
+            'mes_ano' => $this->input->post('mes_ano'));
+
+        $dados_solic = array('project_id' => $this->input->post('project_id'),
+            'created_by' => $this->session->userdata['id'], 'tipo' => 'Bolsa',
+            'status' => 'Aberto');
+
+        $report_id = $this->input->post('report_id');
+        $situacao = $this->input->post('situacao');
+        $motivo = $this->input->post('motivo');
+
+        $id_solicitaca_bolsa = $this->Model_solicitacao->New_solic_bolsa($dados_solic, $dados_solic_bolsa, $lista_bolsistas);
+
+        foreach ($report_id as $key => $report) {//lista de ids dos relatórios, para marcar como aprovado ou negado
+            $dados_update_report = array('id' => $report_id{$key}, 'status' => $situacao{$key},
+                'deny_reason' => SetValueNotEmpty($motivo{$key}), 'accept_or_deny_by' => $this->session->userdata('id'),
+                'accept_or_deny_at' => date('Y-m-d H:i:s'), 'solic_bolsa_id' => $id_solicitaca_bolsa);
+            $this->Model_project->Update_report_info($dados_update_report);
+        }
+
+        $this->session->set_flashdata('solic_criada_ok', 'Solicitação de pagamento de bolsa criada com sucesso!');
+        redirect("Ctrl_project/Project_info/" . $dados_solic['project_id']);
     }
 
     function New_solic_servico() {

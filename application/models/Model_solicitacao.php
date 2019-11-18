@@ -53,6 +53,10 @@ class Model_solicitacao extends CI_Model {
     function Get_msg_files($msg_id) {
         return $this->db->get_where('files', array('msg_id' => $msg_id))->result();
     }
+    
+    function Get_file_by_id($id) {
+        return $this->db->get_where('files', array('id' => $id))->row();
+    }
 
     function Get_solicitacao_encontro($solicitacao_id) {
         $this->db->select('solicitacao.id as main_solicitacao_id, solicitacao_encontro.*');
@@ -140,11 +144,10 @@ class Model_solicitacao extends CI_Model {
         $dados_solic_bolsa['solicitacao_id'] = $this->db->insert_id();
         $this->db->insert('solicitacao_bolsa', $dados_solic_bolsa);
         $id_solicitacao_bolsa = $this->db->insert_id();
-        foreach ($lista_bolsistas as $bolsista) {
+        foreach ($lista_bolsistas as $bolsista) {//verificar se $lista_bolsistas é null, senão dá pau
             $this->db->insert('solicitacao_bolsista', array('solicitacao_bolsa_id' => $id_solicitacao_bolsa, 'bolsista_id' => $bolsista));
         }
-        $this->session->set_flashdata('solic_criada_ok', 'Solicitação criada com sucesso!');
-        redirect("Ctrl_project/Project_info/" . $dados_solic['project_id']);
+        return $id_solicitacao_bolsa;
     }
 
     /**
@@ -247,7 +250,7 @@ class Model_solicitacao extends CI_Model {
     function Insert_parcela($dados_parcela) {
         $this->db->insert('pagamento_autonomo', $dados_parcela);
     }
-    
+
     /**
      * Atualiza dados de parcela existente na tabela pagamento_autonomo
      * @param ARRAY $dados_parcela
@@ -255,14 +258,14 @@ class Model_solicitacao extends CI_Model {
     function Update_parcela($dados_parcela) {
         $this->db->update('pagamento_autonomo', $dados_parcela, "id = $dados_parcela->id");
     }
-    
+
     /**
      * Retorna dados da parcela de pagamento
      * Query: select * from pagamento_autonomo where id = $parcela_id;
      * @param int $parcela_id
      * @return OBJECT objeto com retorno da query (uma linha)
      */
-    function Get_parcela_data($parcela_id){
+    function Get_parcela_data($parcela_id) {
         return $this->db->get_where('pagamento_autonomo', array('id' => $parcela_id))->row();
     }
 

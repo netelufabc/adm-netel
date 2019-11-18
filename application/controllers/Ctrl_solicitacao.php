@@ -21,7 +21,9 @@ class Ctrl_solicitacao extends CI_Controller {
      */
     function Solicitacao_info() {
 
-        $bolsistas = null;
+        $bolsistas = null;//bolsistas para solicitacao de bolsa, null para não dar pau quando for outras solicitacoes que não bolsa
+        $relatorio_bolsa = null;//relatorio para o pedido de bolsa
+        
         $solicitacao_id = $this->uri->segment(3);
         $basic_info = $this->Model_solicitacao->Get_solicitacao_basic_info($solicitacao_id);
 
@@ -54,6 +56,7 @@ class Ctrl_solicitacao extends CI_Controller {
             case 'Bolsa':
                 $solic = $this->Model_solicitacao->Get_solicitacao_bolsa($solicitacao_id);
                 $bolsistas = $this->Model_solicitacao->Get_bolsistas_from_solicitacao($solic->id);
+                $relatorio_bolsa = $this->Model_solicitacao->Get_file_by_id($solic->coord_report_id);
                 break;
             case 'Compra':
                 $solic = $this->Model_solicitacao->Get_solicitacao_compra($solicitacao_id);
@@ -69,6 +72,7 @@ class Ctrl_solicitacao extends CI_Controller {
         }
 
         $dados = array(
+            'relatorio_bolsa' => $relatorio_bolsa,
             'listaMsg' => $mensagens,
             'basic_info' => $basic_info,
             'solic' => $solic,
