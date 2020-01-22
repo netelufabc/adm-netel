@@ -154,6 +154,7 @@ function criamenu($user_id, $user_role) {
                     'Ctrl_administrativo/List_users' => 'Listar Usuários',
                     'Ctrl_administrativo/New_user' => 'Cadastrar Usuários',
                     'Ctrl_administrativo/New_project' => 'Cadastrar Novo Projeto',
+                    'Ctrl_administrativo/Config' => 'Configurações do Sistema',
                 );
                 break;
             case 2:
@@ -164,6 +165,7 @@ function criamenu($user_id, $user_role) {
                     'Ctrl_administrativo/List_users' => 'Listar Usuários',
                     'Ctrl_administrativo/New_user' => 'Cadastrar Usuários',
                     'Ctrl_administrativo/New_project' => 'Cadastrar Novo Projeto',
+                    'Ctrl_administrativo/Config' => 'Configurações do Sistema',
                 );
                 break;
             case 3:

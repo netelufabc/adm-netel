@@ -13,18 +13,18 @@ class Ctrl_login extends CI_Controller {
         $dados_login = elements(array('login', 'password'), $this->input->post());
         $user_data = $this->Model_login->Get_user_and_role($dados_login['login']);
         $user_id = $user_data{0}->id;
-
-        $ldap_info = $this->Ldap_login($dados_login, $user_id);//email e nome do ldap
+        $ldap_info = $this->Ldap_login($dados_login, $user_id); //email e nome do ldap
         if ($ldap_info) {
             if (count($user_data) == 1) {
                 $role = $user_data{0}->role_id;
                 $sessioninfo = array('id' => $user_data{0}->id, 'login' => $user_data{0}->login,
                     'nome' => $ldap_info['displayname'], 'email' => $ldap_info['mail'], 'role' => $role);
                 $this->session->set_userdata($sessioninfo);
+
                 redirect('Ctrl_main');
             } else {
                 $dados = array(
-                    'ldap_info' => $ldap_info,//email e nome do ldap
+                    'ldap_info' => $ldap_info, //email e nome do ldap
                     'user_data' => $user_data,
                     'view_content' => 'View_content_select_role.php',
                 );

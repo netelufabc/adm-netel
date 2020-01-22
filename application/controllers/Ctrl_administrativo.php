@@ -2,11 +2,10 @@
 
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Ctrl_administrativo extends CI_Controller {
+class Ctrl_administrativo extends MY_Controller {
 
     public function __construct() {
         parent::__construct();
-        IsLogged();
         AllowRoles(2);
         $this->load->model('Model_administrativo');
         $this->load->model('Model_project');
@@ -27,9 +26,44 @@ class Ctrl_administrativo extends CI_Controller {
         $this->load->view('View_main', $dados);
     }
 
-    function List_all_solic(){
+    function Config() {
+
+        $config_temp = get_object_vars($this->GetConfig());
+        $config = array();
+        foreach ($config_temp as $name => $value) {
+            $var = new stdClass();
+            $var->name = $name;
+            $var->value = $value;
+            $var->info = $this->GetConfigInfo($var->name)->info;
+            array_push($config, $var);
+        }
+
+        $dados = array(
+            'config' => $config,
+            'view_menu' => 'View_menu.php',
+            'view_content' => 'View_content_config',
+            'menu_item' => criamenu($this->session->userdata('id'), $this->session->userdata('role')),
+        );
+        $this->load->view('View_main', $dados);
+    }
+
+    function Change_config() {
+        $this->form_validation->set_rules('var_value', 'VALOR DA VARIÁVEL', 'required|trim');
+
+        if ($this->form_validation->run() == TRUE) {
+            $dados_var = elements(array('var_name', 'var_value'), $this->input->post());
+            if ($this->SetConfig($dados_var['var_name'], $dados_var['var_value'])) {
+                $this->session->set_flashdata('config_ok', 'Configuração alterada!');
+            }
+            redirect('Ctrl_administrativo/Config');
+        } else {
+            redirect('Ctrl_administrativo/Config');
+        }
+    }
+
+    function List_all_solic() {
         $all_solic = $this->Model_solicitacao->Get_all_solicitacoes();
-        
+
         $dados = array(
             'all_solic' => $all_solic,
             'view_menu' => 'View_menu.php',
@@ -38,7 +72,18 @@ class Ctrl_administrativo extends CI_Controller {
         );
         $this->load->view('View_main', $dados);
     }
-    
+
+    function Configs() {
+
+        $dados = array(
+            'configs' => $configs,
+            'view_menu' => 'View_menu.php',
+            'view_content' => 'View_content_configs',
+            'menu_item' => criamenu($this->session->userdata('id'), $this->session->userdata('role')),
+        );
+        $this->load->view('View_main', $dados);
+    }
+
     public function List_users() {
 
         $listaUsers = $this->Model_administrativo->Get_all_users();
@@ -93,7 +138,7 @@ class Ctrl_administrativo extends CI_Controller {
         }
 
         $lista_users = $this->Model_administrativo->Get_all_users();
-        $lista_assistentes = $this->Model_project->Get_project_assitentes($project_id);        
+        $lista_assistentes = $this->Model_project->Get_project_assitentes($project_id);
         $lista_tutores = $this->Model_project->Get_project_tutores($project_id);
         $lista_docentes = $this->Model_project->Get_project_docentes($project_id);
 
@@ -128,7 +173,7 @@ class Ctrl_administrativo extends CI_Controller {
         $user_id = elements(array('tutor'), $this->input->post());
         $this->Model_project->Insert_tutor($project_id, $user_id['tutor']);
     }
-    
+
     public function Edit_project_docente() {
         $project_id = $this->uri->segment(3);
         $user_id = elements(array('docente'), $this->input->post());
@@ -151,11 +196,11 @@ class Ctrl_administrativo extends CI_Controller {
         );
         $this->load->view('View_main', $dados);
     }
-    
+
     /**
      * Botão "marcar como pago" da view "view_content_autonomo".
      */
-    function Set_parcela_pago(){
+    function Set_parcela_pago() {
         $parcela_id = $this->uri->segment(3);
         $this->Model_coordenador->Set_parcela_status($parcela_id, 'Pago');
         $this->session->set_flashdata('pag_alterado', "Pagamento efetuado!");
@@ -165,11 +210,11 @@ class Ctrl_administrativo extends CI_Controller {
     /**
      * Botão "marcar como aguardando autorizacao" da view "view_content_autonomo".
      */
-    function Set_parcela_aguardando_autoriza(){
+    function Set_parcela_aguardando_autoriza() {
         $parcela_id = $this->uri->segment(3);
         $this->Model_coordenador->Set_parcela_status($parcela_id, 'Aguardando autorização');
         $this->session->set_flashdata('pag_alterado', "Status alterado!");
         redirect('Ctrl_coordenador/Pagamento_autonomo/');
     }
-    
+
 }

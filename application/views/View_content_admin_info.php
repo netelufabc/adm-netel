@@ -12,17 +12,19 @@
 <?php
 echo "<h3>INFO</h3>";
 
-echo "<p id=\"timeonthefly\"></p>" . br();
+echo "<p id=\"timeonthefly\"></p>";
 
 echo "Current TimeZone: " . date_default_timezone_get() . br();
 echo "This page load TimeStamp: " . date('Y-m-d H:i:s') . br(2);
 
 echo "Page Load Elapsed time: " . $this->benchmark->elapsed_time() . br();
 echo "<strong>Memory usage: " . $this->benchmark->memory_usage() . br(2) . "</strong>";
+echo "System Variables:" . br();
+echo var_dump($config) . br();
 echo "Session Info: " . br();
-print_r($this->session->userdata());
+var_dump($this->session->userdata());
 
-echo br(2);
+echo br();
 
 echo "Base URL: " . $this->config->base_url() . br();
 echo "Site URL: " . $this->config->site_url() . br(2);

@@ -2,13 +2,11 @@
 
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Ctrl_sysadmin extends CI_Controller {
+class Ctrl_sysadmin extends MY_Controller {
 
     public function __construct() {
         parent::__construct();
-        IsLogged();
         AllowRoles();
-        $this->load->model('Model_sysadmin');
         $this->load->model('Model_administrativo');
         $this->load->model('Model_solicitacao');
     }
@@ -20,6 +18,7 @@ class Ctrl_sysadmin extends CI_Controller {
     function Info() {
 
         $dados = array(
+            'config' => $this->GetConfig(),
             'view_menu' => 'View_menu.php',
             'view_content' => 'View_content_admin_info.php',
             'menu_item' => criamenu($this->session->userdata('id'), $this->session->userdata('role')),

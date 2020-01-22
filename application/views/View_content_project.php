@@ -2,7 +2,17 @@
 echo "<h2>Projeto número: " . $project_info->project_number . "</h2>";
 echo "<h3>" . $project_info->title . "</h3>";
 echo "<h4>Coordenador: " . $coord->coord_name . " (" . $coord->coordenador . ") " . "</h4>";
-echo "Descrição: " . $project_info->description . br(1);
+echo "Descrição: " . $project_info->description . br(2);
+
+if ($relatorios_pendentes != null) {//mostra este bloco se houver relatorios de tutores pendentes para bolsa
+    echo "<div class=\"validation_errors\">";
+    echo "Existem relatórios de tutores pendentes para solicitação de bolsas:" . br();
+    foreach ($relatorios_pendentes as $report) {
+        echo "Tutor: <strong>" . $report->name . "</strong>";
+        echo " - Mês: <strong>" . vdate($report->month_year, 'myext') . "</strong>" . br();
+    }
+    echo "</div><br>";
+}
 
 echo "<hr>";
 ?>

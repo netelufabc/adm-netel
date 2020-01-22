@@ -130,4 +130,19 @@ class Model_project extends CI_Model {
         $this->db->update('tutor_report', $dados_report, "id = $dados_report[id]");
     }
 
+    /**
+     * select * from tutor_report 
+     * join user on tutor_report.tutor_id = user.id
+     * where tutor_report.project_id = 2 and tutor_report.`status` = 'pendente';
+     * @param int $project_id
+     * @return array result
+     */
+    function Get_pending_reports($project_id) {
+        $this->db->select('*')
+                ->from('tutor_report')
+                ->join('user', 'tutor_report.tutor_id = user.id')
+                ->where(array('tutor_report.project_id' => $project_id, 'status' => 'pendente'));
+        return $this->db->get()->result();
+    }
+
 }

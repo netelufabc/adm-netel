@@ -30,7 +30,10 @@ class Ctrl_project extends CI_Controller {
         $lista_docentes = $this->Model_project->Get_project_docentes($project_id);
         $lista_solicitacoes = $this->Model_solicitacao->Get_solicitacoes_project($project_id);
 
+        $relatorios_pendentes = SetValueNotEmpty($this->Model_project->Get_pending_reports($project_id));//verifica se existem relatórios de tutores pendentes para pagamento para o projeto
+
         $dados = array(
+            'relatorios_pendentes' => $relatorios_pendentes,
             'listaSolicitacoes' => $lista_solicitacoes,
             'coord' => $coordenador,
             'listaTutores' => $lista_tutores,
