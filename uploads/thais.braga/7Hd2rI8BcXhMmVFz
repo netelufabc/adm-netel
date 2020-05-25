@@ -1,0 +1,13 @@
+Em reunião realizada dia tal na sala tal, com a presença dos coordenadores do Núcleo de Tecnologia da Informação - NTI, Paulo Victor Fernandes, do Núcleo Educacional de Tecnologias e Línguas - NETEL, André Brandão e do Magnífico Reitor da Universidade Federal do ABC, no tocante à implantação e manutenção do novo Ambiente Virtual de Aprendizagem da instituição, MOODLE, que substituirá o atual, TIDIA-AE, conforme decisão do Comitê Estratégico de Tecnologia da Informação e Comunicação - CETIC em 25 de Julho de 2018, ficou definido, das responsabilidades de cada área, o que segue:
+
+Implantação: O NTI fica responsável por efetuar a implantação do sistema, bem como alocação e decisão sobre quais recursos utilizar para tal fim, promovendo disponibilidade, segurança e performance necessárias para utilização satisfatória do sistema pela comunidade da UFABC, disponibilizando, configurando e mantendo servidores web, base de dados e armazenamento necessários para correto funcionamento do sistema. Deve disponibilizar também uma versão para testes e homologação.
+
+Manutenção: O NTI fica responsável por manter o sistema disponível e operando de forma satisfatória, promovendo monitoramento da ferramenta a atuando conforme identificados problemas de ordem de hardware e sistemas atuantes em backend, tais como servidores web, balanceadores de carga, serviçoes de back-up, e-mail, base de dados, etc.
+
+Nível de Serviço (SLA): O NTI e NETEL devem definir níveis de serviço para atendimento de requisições feitas pelo NETEL, o qual, por sua vez, atende solicitações oriundas da comunidade acadêmica, no tocante a atualizações, mudanças de configurações e instalações ou remoção de funionalidades do sistema via plugins.
+
+Suporte: O suporte técnico e operacional ao sistema fica a cargo do NTI.
+
+Da configuração do ambiente, atualizações, plugins e testes: Fica a cargo do NETEL, atender solicitações da comunidade acadêmica referentes a atualizações do sistema e plugins, instalações de plugins, testes operacionais, temas e decisões sobre o comportamento operacional do sistema, bem como configurações internas e definições de políticas de uso do sistema, além de analisar e testar a viabilidade operacional das solicitações, sendo estas posteriormente direcionadas ao NTI para avaliação técnica e posterior implantação na versão final.
+
+Transição: O NETEL deve definir via Conselho Técnico Científico - CTC, a forma e o período necessário para transição do sistema TIDIA-AE para o MOODLE, bem como políticas de transição e meios de inclusão e instrução para os usuários do novo sistema, promovendo auxílio nesta etapa do processo.

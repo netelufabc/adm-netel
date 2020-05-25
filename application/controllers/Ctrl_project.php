@@ -2,7 +2,7 @@
 
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Ctrl_project extends CI_Controller {
+class Ctrl_project extends MY_Controller {
 
     public function __construct() {
         parent::__construct();
@@ -67,6 +67,7 @@ class Ctrl_project extends CI_Controller {
         }
 
         $dados = array(
+            'system_vars' => $this->GetConfig(),
             'new_solic_list' => $new_solic_list, //lista para menu dropdown
             'project_id' => $project_id,
             'view_menu' => 'View_menu.php',

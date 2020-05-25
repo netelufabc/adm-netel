@@ -29,7 +29,7 @@ class Model_tutor extends CI_Model {
      * @return DB_OBJECT Linha da tabela tutor_report relativa ao relatório do mês
      */
     function Get_report_month($tutor_id, $project_id, $month_year) {
-        $this->db->select('tutor_report.*, user.login, user.name as accepted_or_denied_by, uab_project.title, files.file_name, files.file_hash, files.file_name')
+        $this->db->select('tutor_report.*, user.login, user.name as accepted_or_denied_by, uab_project.title, files.file_name, files.file_hash')
                 ->from('tutor_report')
                 ->join('user', 'tutor_report.accept_or_deny_by = user.id', 'left')
                 ->join('files', 'tutor_report.file_id = files.id', 'left')

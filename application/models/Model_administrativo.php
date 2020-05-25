@@ -62,6 +62,103 @@ class Model_administrativo extends CI_Model {
         $this->db->update('uab_project', $dados);
     }
 
-
+#Rafael
+    /**
+     * QUERY:
+     * SELECT user.*, GROUP_CONCAT(DISTINCT roles.title ORDER BY roles.title ASC SEPARATOR ', ') AS title
+     * FROM user
+     * JOIN user_role ON user.id = user_role.user_id
+     * JOIN roles ON user_role.role_id = roles.id
+     * GROUP BY user.id
+     * ORDER BY user.id
+     * 
+     * RETURN: os dados dos usuários com todas as roles concatenadas
+     */
+    public function Get_all_user_roles() {
+        $this->db->select("user.*, GROUP_CONCAT(DISTINCT roles.title ORDER BY roles.title ASC SEPARATOR ', ') AS title");
+        $this->db->from('user');
+        $this->db->join('user_role', "user.id = user_role.user_id");
+        $this->db->join('roles', "user_role.role_id = roles.id");
+        $this->db->group_by('user.id');
+        $this->db->order_by('user.id');
+        
+        return $this->db->get()->result();
+    }
+    
+    /**
+     * QUERY
+     * SELECT *
+     * FROM user_role
+     * WHERE user_id = $user_id AND role_id = $role_id
+     *
+     * @param type $user_id: id do usuário que desejo saber se tem a role
+     * @param type $role_id: id da role que desejo saber se o usuário tem
+     * @return boolean: TRUE se tem a role, FALSE caso contrário
+     */
+    public function User_has_role($user_id, $role_id) {
+        $this->db->select("*");
+        $this->db->from('user_role');
+        $this->db->where('user_id',$user_id);
+        $this->db->where('role_id',$role_id);
+        if ($this->db->get()->result()){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+    
+    /**
+     * Adiciona a role ao usuário
+     * 
+     * @param type $user_id: id do usuário que se deseja adicionar a role
+     * @param type $role_id: id da role a ser adicionada
+     */
+    public function Add_new_role($user_id, $role_id) {
+        $user_data = array(
+            'created_by' => $this->session->userdata('login'),
+            'user_id' => $user_id,
+            'role_id' => $role_id,
+            'project_id' => 1
+        );
+        
+        $this->db->db_debug = FALSE;
+        
+        # Alterar o banco de dados (nome está diferente)
+        $result = $this->db->insert('user_role', $user_data);
+        $this->db->db_debug = TRUE;        
+        if ($result) {
+            $this->session->set_flashdata('new_role_ok', "Usuário adicionado como Administrador Netel");
+            redirect('Ctrl_administrativo/Config');
+        } else {
+            $this->session->set_flashdata('new_role_failed', 'Falha ao inserir, erro de banco de dados (login, email duplicado?).');
+            redirect('Ctrl_administrativo/Config');
+        }
+    }
+    
+    /**
+     * QUERY:
+     * SELECT roles.title, uab_project.project_number, uab_project.id, user_role.role_id
+     * FROM user_role
+     * JOIN uab_project ON user_role.project_id = uab_project.id
+     * JOIN roles ON user_role.role_id = roles.id
+     * WHERE user_role.user_id = $user_id
+     * ORDER BY user_role.role_id
+     * 
+     * @param type $user_id: id do usuário que se deseja mais informações
+     * @return type Array com as roler e os respectivos projetos do usuário
+     */
+    public function Get_user_project_roles($user_id) {
+        $this->db->select("roles.title, uab_project.project_number, uab_project.id, user_role.role_id");
+        $this->db->from('user_role');
+        $this->db->join('uab_project', "user_role.project_id = uab_project.id");
+        $this->db->join('roles', "user_role.role_id = roles.id");
+        $this->db->where('user_role.user_id', $user_id);
+        $this->db->order_by('user_role.role_id');
+        
+        return $this->db->get()->result();
+    }
+    
+    #END_Rafael
 
 }

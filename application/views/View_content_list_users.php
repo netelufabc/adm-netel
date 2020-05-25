@@ -17,7 +17,10 @@ if (isset($listaUsers)) {
     $this->table->set_heading('LOGIN', 'NOME', 'EMAIL', 'CRIADO EM', 'CRIADO POR', 'PAPÉIS');
     foreach ($listaUsers as $row) {
 
-        $this->table->add_row($row->login, $row->name, $row->email, $row->create_time, $row->created_by);
+        //$this->table->add_row($row->login, $row->name, $row->email, $row->create_time, $row->created_by);
+        #Adicionado as roles (como title)
+        $this->table->add_row($row->login, anchor("Ctrl_administrativo/User_detail/$row->id/$row->name", $row->name), $row->email, $row->create_time, $row->created_by, $row->title);
+    
     }
     echo $this->table->generate();
 } else {

@@ -2,7 +2,7 @@
 
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Ctrl_tutor extends CI_Controller {
+class Ctrl_tutor extends MY_Controller {
 
     public function __construct() {
         parent::__construct();
@@ -68,6 +68,7 @@ class Ctrl_tutor extends CI_Controller {
         }
 
         $dados = array(
+            'system_vars' => $this->GetConfig(),
             'meses_pendentes' => $meses_pendentes,
             'meses_aprovados' => $meses_aprovados,
             'meses_nao_enviados' => $meses_nao_enviados,

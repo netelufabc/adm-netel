@@ -5,8 +5,8 @@ echo "<h4>Coordenador: " . $coord->coord_name . " (" . $coord->coordenador . ") 
 echo "Descrição: " . $project_info->description . br(2);
 
 if ($relatorios_pendentes != null) {//mostra este bloco se houver relatorios de tutores pendentes para bolsa
-    echo "<div class=\"validation_errors\">";
-    echo "Existem relatórios de tutores pendentes para solicitação de bolsas:" . br();
+    echo "<div class=\"validation_errors_list\">";
+    echo "Existem relatórios de tutores pendentes para solicitação de bolsas:" . br(2);
     foreach ($relatorios_pendentes as $report) {
         echo "Tutor: <strong>" . $report->name . "</strong>";
         echo " - Mês: <strong>" . vdate($report->month_year, 'myext') . "</strong>" . br();

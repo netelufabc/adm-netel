@@ -307,7 +307,7 @@ if ($this->session->flashdata('erro_solic')) {
 //} else {
 //    echo "<h3>Fora do prazo</h3>";
 //}
-        if (substr(date('Y-m-d'), -2) >= '06' && substr(date('Y-m-d'), -2) <= 22) {
+        if (substr(date('Y-m-d'), -2) >= $system_vars->min_date_coord_upload && substr(date('Y-m-d'), -2) <= $system_vars->max_date_coord_upload) {
             echo form_open('Ctrl_project/New_solic_bolsa');
             echo form_hidden('project_id', $project_id);
             echo br(1);
@@ -319,8 +319,12 @@ if ($this->session->flashdata('erro_solic')) {
             echo form_label('Pagamento para tutores ou docentes?') . br();
             echo form_dropdown('tutor_ou_docente', array('' => 'Selecione', 'tutor' => 'Tutores', 'docente' => 'Docentes'));
             echo br(2);
+            echo form_submit(array('name' => 'inserir_solicitacao_bolsa'), 'Continuar...');
+            echo form_close();
         } else {
-            echo "<h3>Fora do prazo (06 à 22 view_content_new_solicitacao)</h3>" . br();
+            echo "<div class=\"validation_errors\">";
+            echo "Atualmente fora do prazo para abertura de solicitações de pagamento de bolsas. O prazo para abertura é do dia $system_vars->min_date_coord_upload ao dia $system_vars->max_date_coord_upload.";
+            echo "</div><br>";
         }
         ?>
 
@@ -351,8 +355,8 @@ if ($this->session->flashdata('erro_solic')) {
         </div>
 
         <?php
-        echo form_submit(array('name' => 'inserir_solicitacao_bolsa'), 'Continuar...');
-        echo form_close();
+//        echo form_submit(array('name' => 'inserir_solicitacao_bolsa'), 'Continuar...');
+//        echo form_close();
         ?>
 
     </div>

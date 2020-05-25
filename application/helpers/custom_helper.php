@@ -119,6 +119,22 @@ function generateRandomString($length = 16) {
 }
 
 /**
+ * Gera linha de download de arquivo (somente para arquivos com índice no banco de dados).
+ * @param type $file_name_original
+ * @param type $file_hash
+ * @param type $login
+ * @return type
+ */
+function FileDownload($file_name_original, $file_hash, $login) {
+    if ($file_name_original == null || $file_hash == null) {
+        return;
+    } else {
+        $file_name = str_replace(' ', '_', $file_name_original); //remove tods espaços em branco para nao dar pau na hora de download
+        echo anchor('uploads/' . $login . "/" . $file_hash, $file_name, "download=$file_name") . "<br>";
+    }
+}
+
+/**
  * Verifica se o valor informado é igual a null ou é uma string vazia (""). 
  * Se for, retorna null, senão retorna o próprio valor.
  * Usado para set null quando a string é vazia.

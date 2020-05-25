@@ -38,8 +38,17 @@ class Ctrl_administrativo extends MY_Controller {
             array_push($config, $var);
         }
 
+        $lista_users = $this->Model_administrativo->Get_all_users();
+
+        $lista_users_array['0'] = " --Selecione-- ";
+        foreach ($lista_users as $value) {
+            $lista_users_array[$value->id] = $value->name;
+        }
+        asort($lista_users_array);
+
         $dados = array(
             'config' => $config,
+            'lista_users' => $lista_users_array,
             'view_menu' => 'View_menu.php',
             'view_content' => 'View_content_config',
             'menu_item' => criamenu($this->session->userdata('id'), $this->session->userdata('role')),
@@ -73,20 +82,23 @@ class Ctrl_administrativo extends MY_Controller {
         $this->load->view('View_main', $dados);
     }
 
-    function Configs() {
-
-        $dados = array(
-            'configs' => $configs,
-            'view_menu' => 'View_menu.php',
-            'view_content' => 'View_content_configs',
-            'menu_item' => criamenu($this->session->userdata('id'), $this->session->userdata('role')),
-        );
-        $this->load->view('View_main', $dados);
-    }
+//    function Configs() {
+//
+//        $dados = array(
+//            'configs' => $configs,
+//            'view_menu' => 'View_menu.php',
+//            'view_content' => 'View_content_configs',
+//            'menu_item' => criamenu($this->session->userdata('id'), $this->session->userdata('role')),
+//        );
+//        $this->load->view('View_main', $dados);
+//    }
 
     public function List_users() {
 
-        $listaUsers = $this->Model_administrativo->Get_all_users();
+        //$listaUsers = $this->Model_administrativo->Get_all_users();
+        #Rafael
+        $listaUsers = $this->Model_administrativo->Get_all_user_roles();
+        #END_Rafael
 
         $dados = array(
             'listaUsers' => $listaUsers,
@@ -217,4 +229,41 @@ class Ctrl_administrativo extends MY_Controller {
         redirect('Ctrl_coordenador/Pagamento_autonomo/');
     }
 
+#Rafael
+
+    public function Add_adm_netel_role() {
+        if (!$this->Model_administrativo->User_has_role($this->input->post('netel_Adm'), 2)) {
+            $this->Model_administrativo->Add_new_role($this->input->post('netel_Adm'), 2);
+        } else {
+            $this->session->set_flashdata('new_role_failed', 'Usuário já é Administrador Netel.');
+        }
+
+        redirect('Ctrl_administrativo/Config');
+    }
+
+    public function User_detail() {
+        $user_id = $this->uri->segment(3);
+        $user_name = $this->uri->segment(4);
+        $user_name = str_replace("%20", " ", $user_name);
+
+        $user_info = $this->Model_administrativo->Get_user_project_roles($user_id);
+
+        foreach ($user_info as $info) {
+            if ($info->role_id <= 2) {
+                $info->project_number = ' ';
+                $info->id = ' ';
+            }
+        }
+
+        $dados = array(
+            'user_name' => $user_name,
+            'user_info' => $user_info,
+            'view_menu' => 'View_menu.php',
+            'view_content' => 'View_user_details',
+            'menu_item' => criamenu($this->session->userdata('id'), $this->session->userdata('role')),
+        );
+        $this->load->view('View_main', $dados);
+    }
+
+    #END_Rafael
 }

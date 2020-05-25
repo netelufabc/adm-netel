@@ -40,8 +40,9 @@ if (count($lista_tutores) > 0) {//verifica se existem tutores cadastrados no pro
                     echo vdate($report->upload_date);
                     echo "</td>";
                     echo "<td>";
-                    echo anchor('uploads/' . $this->session->userdata['login'] . "/" .
-                            $report->file_hash, $report->file_name, "download=$report->file_name");
+                    FileDownload($report->file_name, $report->file_hash, $this->session->userdata['login']);
+//                    echo anchor('uploads/' . $this->session->userdata['login'] . "/" .
+//                            $report->file_hash, $report->file_name, "download=$report->file_name");
                     echo "</td>";
                     echo "<td>";
                     echo "Aprovar " . form_radio(array('name' => "aprovar$report->id", 'value' => 'aprovado', 'onclick' => "show1($report->id)")) .

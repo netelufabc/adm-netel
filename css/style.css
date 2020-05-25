@@ -111,6 +111,14 @@ input[type=text], input[type=date], input[type=month], input[type=time], input[t
     padding-left: 48px;
 }
 
+.validation_errors_list{
+    /*min-height: 48px;
+    line-height: 48px;*/
+    border: 1px solid #ffcd00;
+    background: #f9ebb3 url(../images/warning.png) center left no-repeat;
+    padding-left: 48px;
+}
+
 .message_success{
     min-height: 48px;
     line-height: 48px;
