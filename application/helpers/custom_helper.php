@@ -125,12 +125,13 @@ function generateRandomString($length = 16) {
  * @param type $login
  * @return type
  */
-function FileDownload($file_name_original, $file_hash, $login) {
+function FileDownload($file_name_original, $file_hash) {
     if ($file_name_original == null || $file_hash == null) {
         return;
     } else {
         $file_name = str_replace(' ', '_', $file_name_original); //remove tods espaços em branco para nao dar pau na hora de download
-        echo anchor('uploads/' . $login . "/" . $file_hash, $file_name, "download=$file_name") . "<br>";
+        //echo anchor('uploads/' . $login . "/" . $file_hash, $file_name, "download=$file_name") . "<br>";
+        echo anchor('uploads/' . $file_hash, $file_name, "download=$file_name") . "<br>";
     }
 }
 

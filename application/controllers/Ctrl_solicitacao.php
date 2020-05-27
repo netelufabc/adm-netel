@@ -324,8 +324,11 @@ class Ctrl_solicitacao extends CI_Controller {
         $countfiles = count($_FILES['files']['name']);
 
         //verifica e cria diretorio de upload do user
-        if (!is_dir('uploads/' . $this->session->userdata['login'])) {
-            mkdir('uploads/' . $this->session->userdata['login']);
+//        if (!is_dir('uploads/' . $this->session->userdata['login'])) {
+//            mkdir('uploads/' . $this->session->userdata['login']);
+//        }
+        if (!is_dir('uploads/')) {
+            mkdir('uploads/');
         }
 
         for ($i = 0; $i < $countfiles; $i++) {
@@ -333,7 +336,8 @@ class Ctrl_solicitacao extends CI_Controller {
             $file['msg_id'] = $msg_id;
             $file['file_hash'] = generateRandomString();
             $file['file_name'] = utf8_decode($_FILES['files']['name'][$i]);
-            move_uploaded_file($_FILES['files']['tmp_name'][$i], 'uploads/' . $this->session->userdata['login'] . '/' . $file['file_hash']);
+           // move_uploaded_file($_FILES['files']['tmp_name'][$i], 'uploads/' . $this->session->userdata['login'] . '/' . $file['file_hash']);
+            move_uploaded_file($_FILES['files']['tmp_name'][$i], 'uploads/' . $file['file_hash']);
             $this->Model_solicitacao->Insert_file_info($file);
         }
     }

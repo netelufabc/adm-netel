@@ -72,8 +72,15 @@ switch ($basic_info->tipo) {//mostra os dados de acordo com o tpo de solicitaç�
         echo "Mês / Ano de referência: " . vdate($solic->mes_ano, 'my') . br();
         echo "Bolsa para: " . $solic->tutor_ou_docente . br();
         echo "Relatório: ";
-        echo anchor('uploads/' . $this->session->userdata['login'] . "/" .
-                $relatorio_bolsa->file_hash, $relatorio_bolsa->file_name, "download=$relatorio_bolsa->file_name") . br(2);
+//        echo anchor('uploads/' . $this->session->userdata['login'] . "/" .
+//                $relatorio_bolsa->file_hash, $relatorio_bolsa->file_name, "download=$relatorio_bolsa->file_name") . br(2);
+        if ($relatorio_bolsa == null) {
+            echo "Arquivo de relatório não encontrado" . br();
+        } else {
+            FileDownload($relatorio_bolsa->file_name, $relatorio_bolsa->file_hash);
+            //echo anchor('uploads/' .
+            //        $relatorio_bolsa->file_hash, $relatorio_bolsa->file_name, "download=$relatorio_bolsa->file_name") . br(2);
+        }
         echo "A receber pagamento de bolsa:" . br(2);
         foreach ($bolsistas as $bolsista) {
             echo $bolsista->name . br();
@@ -192,9 +199,10 @@ if (isset($listaMsg) && ($listaMsg != null)) {
         if (count($msg->files) > 0) {
             echo "Anexos (clique para download):<br><br>";
             foreach ($msg->files as $file) {
-                $file->file_name = str_replace(' ', '_', $file->file_name); //remove tods espaços em branco para nao dar pau na hora de download
-                echo anchor('uploads/' . $this->session->userdata['login'] . "/" .
-                        $file->file_hash, $file->file_name, "download=$file->file_name") . "<br>";
+                //$file->file_name = str_replace(' ', '_', $file->file_name); //remove tods espaços em branco para nao dar pau na hora de download
+//                echo anchor('uploads/' . $this->session->userdata['login'] . "/" .
+//                        $file->file_hash, $file->file_name, "download=$file->file_name") . "<br>";
+                FileDownload($file->file_name, $file->file_hash);
             }
         }
         echo "</td>";

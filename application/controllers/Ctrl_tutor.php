@@ -36,9 +36,9 @@ class Ctrl_tutor extends MY_Controller {
         $project_info = $this->Model_project->Get_project_info($project_id);
 
         $today = date('d', strtotime('today'));
-        $last_month = date('Y-m', strtotime('last month'));
+        $last_month = date('Y-m-01', strtotime('last month'));
         $tutor_added_at_raw = $this->Model_tutor->Get_tutor_role_date($tutor_id, $project_id)->role_create_time; //data que vai contar para aceitar relatórios
-        $tutor_added_at = date('Y-m', strtotime($tutor_added_at_raw)); //data que vai contar para aceitar relatórios
+        $tutor_added_at = date('Y-m-01', strtotime($tutor_added_at_raw)); //data que vai contar para aceitar relatórios
 
         $meses_nao_enviados = null;
         $meses_rejeitados_permanente = null;
@@ -64,7 +64,7 @@ class Ctrl_tutor extends MY_Controller {
                     $meses_pendentes[$last_month] = $existe_report;
                 }
             }
-            $last_month = date('Y-m', strtotime('last month', strtotime($last_month)));
+            $last_month = date('Y-m-01', strtotime('last month', strtotime($last_month)));
         }
 
         $dados = array(
@@ -86,13 +86,12 @@ class Ctrl_tutor extends MY_Controller {
     function Upload_reports() {//botao enviar de view_content_list_tutor_reports
         $project_id = $this->uri->segment(3);
 
-        $all_empty = true;//variavel para verificar se todos campos de arquivos estão vazios
+        $all_empty = true; //variavel para verificar se todos campos de arquivos estão vazios
 
         if (count($_FILES) > 0) {     //verifica se tem algum elemento no array de files    
-            if (!is_dir('uploads/' . $this->session->userdata['login'])) {//verifica e cria diretorio de upload do user
-                mkdir('uploads/' . $this->session->userdata['login']);
-            }
-
+//            if (!is_dir('uploads/' . $this->session->userdata['login'])) {//verifica e cria diretorio de upload do user
+//                mkdir('uploads/' . $this->session->userdata['login']);
+//            }
             foreach ($_FILES as $post_filename => $file) {
 
                 if ($file['name'] != '') {
@@ -102,14 +101,15 @@ class Ctrl_tutor extends MY_Controller {
                     $file_info = Array();
                     $file_info['file_hash'] = generateRandomString();
                     $file_info['file_name'] = $file['name'];
-                    move_uploaded_file($file['tmp_name'], 'uploads/' . $this->session->userdata['login'] . '/' . $file_info['file_hash']);
+                    //move_uploaded_file($file['tmp_name'], 'uploads/' . $this->session->userdata['login'] . '/' . $file_info['file_hash']);
+                    move_uploaded_file($file['tmp_name'], 'uploads/' . $file_info['file_hash']);
 
                     $report_data = array();
                     $report_data['file_id'] = $this->Model_tutor->Set_report_file_info($file_info); //coloca na tabela info do arquivo e retorna o id
 
                     $report_data['tutor_id'] = $this->session->userdata['id'];
                     $report_data['project_id'] = $this->uri->segment(3);
-                    $report_data['month_year'] = substr($post_filename, 4) . "-00";
+                    $report_data['month_year'] = substr($post_filename, 4) . "-01";
                     $report_data['status'] = 'pendente';
 
                     $this->Model_tutor->Set_report($report_data); //coloca na tabela de report do tutor

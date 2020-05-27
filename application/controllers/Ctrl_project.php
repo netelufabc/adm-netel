@@ -30,7 +30,7 @@ class Ctrl_project extends MY_Controller {
         $lista_docentes = $this->Model_project->Get_project_docentes($project_id);
         $lista_solicitacoes = $this->Model_solicitacao->Get_solicitacoes_project($project_id);
 
-        $relatorios_pendentes = SetValueNotEmpty($this->Model_project->Get_pending_reports($project_id));//verifica se existem relatórios de tutores pendentes para pagamento para o projeto
+        $relatorios_pendentes = SetValueNotEmpty($this->Model_project->Get_pending_reports($project_id)); //verifica se existem relatórios de tutores pendentes para pagamento para o projeto
 
         $dados = array(
             'relatorios_pendentes' => $relatorios_pendentes,
@@ -107,7 +107,7 @@ class Ctrl_project extends MY_Controller {
             $project_id = $this->input->post('project_id');
             $dados_solic_bolsa = elements(array('mes_ano', 'tutor_ou_docente'), $this->input->post());
 
-            $dados_solic_bolsa['mes_ano'] = $dados_solic_bolsa['mes_ano'] . "-00";
+            $dados_solic_bolsa['mes_ano'] = $dados_solic_bolsa['mes_ano'] . "-01";
 
             if ($dados_solic_bolsa['tutor_ou_docente'] == '') {
                 $this->session->set_flashdata('erro_solic', 'Selecione se quem vai receber a bolsa é tutor ou docente!');
@@ -258,9 +258,11 @@ class Ctrl_project extends MY_Controller {
         } else {
             redirect('Ctrl_main');
         }//fim bloco para verificar se veio algum arquivo no POST
-
-        if (!is_dir('uploads/' . $this->session->userdata['login'])) {//verifica e cria diretorio de upload do user
-            mkdir('uploads/' . $this->session->userdata['login']);
+//        if (!is_dir('uploads/' . $this->session->userdata['login'])) {//verifica e cria diretorio de upload do user
+//            mkdir('uploads/' . $this->session->userdata['login']);
+//        }
+        if (!is_dir('uploads/')) {//verifica e cria diretorio de upload do user
+            mkdir('uploads/');
         }
 
         $lista_bolsistas = $this->input->post('tutor_id'); //ids dos bolsistas aprovados - aqui verificar se ao menos um tutor foi aprovado ou totds reprovados, senao esta lista vai null e dá pau no model
@@ -269,7 +271,8 @@ class Ctrl_project extends MY_Controller {
             $file_info = Array();
             $file_info['file_hash'] = generateRandomString();
             $file_info['file_name'] = $file['name'];
-            move_uploaded_file($file['tmp_name'], 'uploads/' . $this->session->userdata['login'] . '/' . $file_info['file_hash']);
+            //move_uploaded_file($file['tmp_name'], 'uploads/' . $this->session->userdata['login'] . '/' . $file_info['file_hash']);
+            move_uploaded_file($file['tmp_name'], 'uploads/' . $file_info['file_hash']);
 
             $coord_report_id = $this->Model_tutor->Set_report_file_info($file_info); //insere na tabela de files
         }

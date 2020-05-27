@@ -28,7 +28,7 @@ class Model_project extends CI_Model {
     }
 
     public function Get_project_tutores($project_id) {
-        $this->db->select('user.id, user.login, user.name, user.email, user_role.create_time, user_role.created_by');
+        $this->db->select('user.id, user.login, user.name, user.email, user_role.create_time, user_role.created_by, user_role.tutor_pay_start');
         $this->db->from('user_role');
         $this->db->join('user', "user_role.user_id = user.id and user_role.role_id = 5");
         $this->db->where('user_role.project_id', $project_id);
@@ -54,10 +54,10 @@ class Model_project extends CI_Model {
         }
     }
 
-    public function Insert_tutor($project_id, $user_id) {
+    public function Insert_tutor($project_id, $user_id, $tutor_pay_start) {
         $query = $this->db->get_where('user_role', array('role_id' => '5', 'project_id' => $project_id, 'user_id' => $user_id));
         if ($query->num_rows() == 0 && $user_id != 0) {
-            $this->db->insert('user_role', array('user_id' => $user_id, 'project_id' => $project_id, 'role_id' => '5'));
+            $this->db->insert('user_role', array('user_id' => $user_id, 'tutor_pay_start' => $tutor_pay_start, 'project_id' => $project_id, 'role_id' => '5', 'created_by' => $this->session->userdata('login')));
             $this->session->set_flashdata('add_tutor_ok', 'Inserido Tutor!');
             redirect("Ctrl_administrativo/Edit_project/$project_id");
         } else {

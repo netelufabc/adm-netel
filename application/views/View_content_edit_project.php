@@ -38,7 +38,7 @@ echo form_close();
 
 echo "<hr>";
 
-echo "Assistentes:" .br(1);
+echo "Assistentes:" . br(1);
 
 if ($this->session->flashdata('add_assist_ok')) {
     echo "<div class=\"message_success\">";
@@ -62,7 +62,7 @@ if (isset($listaAssistentes) && ($listaAssistentes != null)) {
     echo '<h5>NENHUM ASSISTENTE REGISTRADO</h5>';
 }
 
-echo br(1). "Adicionar Assistente:" .br(1);
+echo br(1) . "Adicionar Assistente:" . br(1);
 echo form_open("Ctrl_administrativo/Edit_project_assistente/$dados_project->id");
 echo form_dropdown('assistente', $lista_users);
 echo form_submit(array('name' => 'inserir_assistente'), 'Adicionar Assistente');
@@ -70,7 +70,7 @@ echo form_close();
 
 echo "<hr>";
 
-echo "Docentes:" .br(1);
+echo "Docentes:" . br(1);
 
 if ($this->session->flashdata('add_docente_ok')) {
     echo "<div class=\"message_success\">";
@@ -94,7 +94,7 @@ if (isset($listaDocentes) && ($listaDocentes != null)) {
     echo '<h5>NENHUM DOCENTE REGISTRADO</h5>';
 }
 
-echo br(1). "Adicionar Docente:" .br(1);
+echo br(1) . "Adicionar Docente:" . br(1);
 echo form_open("Ctrl_administrativo/Edit_project_docente/$dados_project->id");
 echo form_dropdown('docente', $lista_users);
 echo form_submit(array('name' => 'inserir_assistente'), 'Adicionar Docente');
@@ -102,7 +102,7 @@ echo form_close();
 
 echo "<hr>";
 
-echo "Tutores:" .br(1);
+echo "Tutores:" . br(1);
 
 if ($this->session->flashdata('add_tutor_ok')) {
     echo "<div class=\"message_success\">";
@@ -116,18 +116,20 @@ if (isset($listaTutores) && ($listaTutores != null)) {
         "table_open" => "<table class='tabela'>",
     );
     $this->table->set_template($template);
-    $this->table->set_heading('LOGIN', 'NOME', 'EMAIL', 'CRIADO EM', 'CRIADO POR');
+    $this->table->set_heading('LOGIN', 'NOME', 'EMAIL', 'CRIADO EM', 'CRIADO POR', 'PAGAMENTO INÍCIO EM');
     foreach ($listaTutores as $row) {
 
-        $this->table->add_row($row->login, $row->name, $row->email, $row->create_time, $row->created_by);
+        $this->table->add_row($row->login, $row->name, $row->email, $row->create_time, $row->created_by, vdate($row->tutor_pay_start, 'my'));
     }
     echo $this->table->generate();
 } else {
     echo '<h5>NENHUM TUTOR REGISTRADO</h5>';
 }
 
-echo br(1). "Adicionar Tutor:" .br(1);
+echo br(1) . "Adicionar Tutor:" . br(1);
 echo form_open("Ctrl_administrativo/Edit_project_tutor/$dados_project->id");
-echo form_dropdown('tutor', $lista_users);
+echo form_dropdown('tutor', $lista_users) . br();
+echo form_label('Mês / Ano para início do pagamento: ') . br();
+echo form_input(array('name' => 'tutor_pay_start', 'type' => 'month', 'required' => 'required'), set_value('tutor_pay_start')) . br();
 echo form_submit(array('name' => 'inserir_tutor'), 'Adicionar Tutor');
 echo form_close();

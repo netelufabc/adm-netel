@@ -59,8 +59,10 @@ if ($meses_pendentes != null) {
     foreach ($meses_pendentes as $mes) {
         echo "<div class=\"div_border\">";
         echo "<strong>" . mdate('%F de %Y', mysql_to_unix($mes->month_year) + 86400) . "</strong>" . br();
-        echo "Relatório enviado: " . anchor('uploads/' . $this->session->userdata['login'] . "/" .
-                $mes->file_hash, $mes->file_name, "download=$mes->file_name") . "<br>";
+//        echo "Relatório enviado: " . anchor('uploads/' . $this->session->userdata['login'] . "/" .
+//                $mes->file_hash, $mes->file_name, "download=$mes->file_name") . "<br>";
+        echo "Relatório enviado: "; //$mes->file_path";
+        FileDownload($mes->file_name, $mes->file_hash);
         echo "</div>";
     }
 } else {
@@ -76,7 +78,7 @@ if ($meses_reenvio != null) {
         echo "<strong>" . mdate('%F de %Y', mysql_to_unix($mes->month_year) + 86400) . "</strong>" . br() . "Rejeitado em " . vdate($mes->accept_or_deny_at)
         . " por " . $mes->accepted_or_denied_by . ". Motivo: " . $mes->deny_reason . br();
         echo "Relatório enviado: "; //$mes->file_path";
-        FileDownload($mes->file_name, $mes->file_hash, $this->session->userdata['login']);
+        FileDownload($mes->file_name, $mes->file_hash);
         echo "Anexar relatório: " . form_upload(array('name' => 'file' . $mes->month_year));
         echo "</div>";
     }
@@ -93,7 +95,7 @@ if ($meses_rejeitados_permanente != null) {
         echo "<strong>" . mdate('%F de %Y', mysql_to_unix($mes->month_year) + 86400) . "</strong>" . br() . "Rejeitado em " . vdate($mes->accept_or_deny_at)
         . " por " . $mes->accepted_or_denied_by . ". Motivo: " . $mes->deny_reason . br();
         echo "Relatório enviado: "; //$mes->file_path";
-        FileDownload($mes->file_name, $mes->file_hash, $this->session->userdata['login']);
+        FileDownload($mes->file_name, $mes->file_hash);
         echo "</div>";
     }
 } else {
@@ -109,7 +111,7 @@ if ($meses_aprovados != null) {
         echo "<strong>" . mdate('%F de %Y', mysql_to_unix($mes->month_year) + 86400) . "</strong>" . br() . "Aprovado em " . vdate($mes->accept_or_deny_at)
         . " por " . $mes->accepted_or_denied_by . br();
         echo "Relatório enviado: "; //$mes->file_path";
-        FileDownload($mes->file_name, $mes->file_hash, $this->session->userdata['login']);
+        FileDownload($mes->file_name, $mes->file_hash);
         echo "</div>";
     }
 } else {

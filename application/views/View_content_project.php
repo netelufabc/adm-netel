@@ -72,10 +72,10 @@ echo "<hr>";
                 "table_open" => "<table class='tabela'>",
             );
             $this->table->set_template($template);
-            $this->table->set_heading('LOGIN', 'NOME', 'EMAIL', 'CRIADO EM', 'INSERIDO POR');
+            $this->table->set_heading('LOGIN', 'NOME', 'EMAIL', 'CRIADO EM', 'INSERIDO POR', 'PAGAMENTO INÍCIO EM');
             foreach ($listaTutores as $row) {
 
-                $this->table->add_row($row->login, $row->name, $row->email, $row->create_time, $row->created_by);
+                $this->table->add_row($row->login, $row->name, $row->email, $row->create_time, $row->created_by, vdate($row->tutor_pay_start, 'my'));
             }
             echo $this->table->generate();
         } else {

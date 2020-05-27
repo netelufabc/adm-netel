@@ -183,7 +183,9 @@ class Ctrl_administrativo extends MY_Controller {
     public function Edit_project_tutor() {
         $project_id = $this->uri->segment(3);
         $user_id = elements(array('tutor'), $this->input->post());
-        $this->Model_project->Insert_tutor($project_id, $user_id['tutor']);
+        $tutor_pay_date = elements(array('tutor_pay_start'), $this->input->post());
+        $tutor_pay_start = $tutor_pay_date['tutor_pay_start'] . "-01";
+        $this->Model_project->Insert_tutor($project_id, $user_id['tutor'], $tutor_pay_start);
     }
 
     public function Edit_project_docente() {

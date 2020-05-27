@@ -41,7 +41,7 @@ class Model_tutor extends CI_Model {
     }
 
     function Get_tutor_role_date($tutor_id, $project_id) {
-        $this->db->select('user.id as user_id, user_role.create_time as role_create_time');
+        $this->db->select('user.id as user_id, user_role.tutor_pay_start as role_create_time');
         $this->db->from('user_role');
         $this->db->join('user', "user_role.user_id = user.id and user_role.role_id = 5");
         $this->db->where('user_role.project_id', $project_id);
