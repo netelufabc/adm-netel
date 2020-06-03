@@ -110,6 +110,29 @@ function HasRole() {
 }
 
 /**
+ * Função para colocar o ícone da interrogação e mostrar um tooltip 
+ * com "title" = $text quando passa o mouse. O navegador já mostra o title 
+ * quando passa o mouse, portanto esta será utilizada somente caso o navegador 
+ * nao mostre o title
+ * @param string $text
+ */
+function QuestionTipFull($text) {
+    echo "<a href=\"#\" title=\"$text\" class=\"tooltip\">
+    <img src=\"/adm-netel/images/questionmark.png\" alt=\"Question Mark\"
+    width=\"30\" height=\"30\" ></img>
+    </a>";
+}
+
+/**
+ * Função para colocar o ícone da interrogação com o title = $text.
+ * @param string $text
+ */
+function QuestionTip($text) {
+    echo "<img src=\"/adm-netel/images/questionmark.png\" title=\"$text\""
+    . " alt=\"Question Mark\" width=\"30\" height=\"30\" ></img>";
+}
+
+/**
  * Gera string aletória para os nomes de arquivo
  * @param int $length tamanho da string
  * @return string string aleatória com $lenght elementos
@@ -232,7 +255,7 @@ function criamenu($user_id, $user_role) {
 function enviar_mail($assunto = NULL, $corpo_msg = NULL, $endEmail = array(), $endEmailCC = array()) {
     require_once './phpmailer/PHPMailerAutoload.php';
 
-    $contaemail = 'netel@ufabc.edu.br';
+    $contaemail = 'a@b.c'; //'netel@ufabc.edu.br';
     $pass = 'Netel2019.';
     $assunto = 'Sistema ADM-NETEL: ' . $assunto;
     $corpo_msg = '<h3>Mensagem enviada pelo Sistema Adm-NETEL - UFABC</h3><br/><br/>' . $corpo_msg . "<br><br>Este é um e-mail automático, não responda.<br>Acesse o sistema em netel.ufabc.edu.br.";

@@ -234,6 +234,7 @@ class Ctrl_project extends MY_Controller {
 //fim monta texto do relatório
 
         $dados = array(
+            'aprovados' => $aprovados,
             'reports' => $reports, //envia dados para pegar ids dos bolsistas
             'text' => $text,
             'dados_relatorio' => $dados_relatorio,

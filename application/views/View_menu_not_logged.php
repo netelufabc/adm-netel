@@ -1,5 +1,5 @@
 <br>
 Nenhum usuário logado.
-<br><br>
+<br>
 
 <hr>

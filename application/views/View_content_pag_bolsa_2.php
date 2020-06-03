@@ -8,7 +8,18 @@ echo br(2);
 
 echo "<hr>";
 
-echo "<h4>Clique para baixar em PDF o Parecer da Coordenação de Curso para impressão.</h4>";
+//echo "<h4>Clique para baixar em PDF o Parecer da Coordenação de Curso para impressão.</h4>";
+//echo anchor('Ctrl_gerarPdf/pdf_parecer_coord', "<h4>Clique para baixar em PDF o Parecer da Coordenação de Curso para impressão.</h4>");
+echo form_open('Ctrl_gerarPdf/pdf_parecer_coord/', array('target' => '_blank'));
+echo form_hidden('nome_coordenador', $dados_relatorio->coordenador);
+echo form_hidden('mes_ano', $dados_relatorio->month_year);
+echo form_hidden('nome_projeto', $dados_relatorio->nome_projeto);
+echo form_hidden('numero_projeto', $dados_relatorio->numero_projeto);
+foreach ($aprovados as $tutor) {
+    echo form_hidden('tutor[]', $tutor);
+}
+echo form_submit('baixar', 'Clique para baixar em PDF o Parecer da Coordenação de Curso para impressão.', array('class' => ''));
+echo form_close();
 
 echo form_open_multipart('Ctrl_project/Create_solic_bolsa/');
 

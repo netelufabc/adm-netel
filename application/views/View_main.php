@@ -7,7 +7,7 @@ if (!isset($view_header)) {
 }
 
 if (!isset($view_menu)) {
-    echo br(1)."Menu not set";
+    //echo br(1)."Menu not set";
     $this->load->view('View_menu_not_logged.php');
 } else {
     $this->load->view($view_menu);

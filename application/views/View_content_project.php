@@ -1,7 +1,11 @@
 <?php
 echo "<h2>Projeto número: " . $project_info->project_number . "</h2>";
 echo "<h3>" . $project_info->title . "</h3>";
-echo "<h4>Coordenador: " . $coord->coord_name . " (" . $coord->coordenador . ") " . "</h4>";
+if (isset($coord) && ($coord != null)) {
+    echo "<h4>Coordenador: " . $coord->coord_name . " (" . $coord->coordenador . ") " . "</h4>";
+} else {
+    echo "<h4>COORDENADOR NÃO DEFINIDO</h4>";
+}
 echo "Descrição: " . $project_info->description . br(2);
 
 if ($relatorios_pendentes != null) {//mostra este bloco se houver relatorios de tutores pendentes para bolsa

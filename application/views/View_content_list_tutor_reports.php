@@ -5,7 +5,7 @@ echo "<h3>Relatórios de Tutoria</h3>" . br();
 echo "<strong>Projeto número: " . $project_info->project_number;
 echo " - " . $project_info->title . "</strong>" . br(2);
 
-echo anchor('/files/tutor_relatorio_generico.pdf', 'Clique aqui para baixar o relatório mensal de atividades', array('download' => 'tutor_relatorio_generico.pdf'));
+//echo anchor('/files/tutor_relatorio_generico.pdf', 'Clique aqui para baixar o relatório mensal de atividades', array('download' => 'tutor_relatorio_generico.pdf'));
 
 if ($this->session->flashdata('report_ok')) {
     echo "<div class=\"message_success\">";
@@ -39,12 +39,15 @@ if ($meses_nao_enviados != null) {
     foreach ($meses_nao_enviados as $mes => $value) {
         echo "<div class=\"div_border\">";
         echo "<strong>" . mdate('%F de %Y', mysql_to_unix($mes) + 86400) . "</strong>" . br();
-        echo "Anexar relatório: " . form_upload(array('name' => 'file' . $mes));
+        $projectnumber = urlencode($project_info->project_number);// necessário configuração para funcionar encode de barras ("/"): http://www.leakon.com/archives/865 solução numero 1
+        echo "Anexar relatório: " .
+        anchor_popup('Ctrl_gerarPdf/pdf_relatorio_tutor/' . $this->session->userdata('nome') . "/" . $projectnumber . "/" . $mes, '(Clique para baixar relatório deste mês)') .
+        form_upload(array('name' => 'file' . $mes));
         echo "</div>";
     }
     if ($today >= $system_vars->min_date_tutor_upload && $today <= $system_vars->max_date_tutor_upload) {//prazo para exibição aos tutores enviar arquivos
-    echo form_submit('Enviar', 'Enviar');
-    }else{
+        echo form_submit('Enviar', 'Enviar');
+    } else {
         echo "<strong>Não é possível enviar relatórios fora do prazo.</strong>";
     }
     echo form_close();

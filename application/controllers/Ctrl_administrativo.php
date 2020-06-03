@@ -115,6 +115,7 @@ class Ctrl_administrativo extends MY_Controller {
 
         if ($this->form_validation->run() == TRUE) {
             $dados_projeto = elements(array('project_number', 'title', 'description'), $this->input->post());
+            $dados_projeto['created_by'] = $this->session->userdata('login');
             $this->Model_administrativo->New_uab_project($dados_projeto);
         }
 
